@@ -1,0 +1,4512 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  background: white;
+  color: #111;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+
+/* ==================================================
+   HEADER
+   ================================================== */
+
+.header {
+  height: 110px;
+  background: #ffffff;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 2px;
+  padding: 0 1.5%;
+}
+
+.headerIcon {
+  display: block;
+  width: 300px;
+  height: 300px;
+
+  object-fit: contain;
+
+  transform: translateX(-80px);
+}
+
+.headerLogo {
+  display: block;
+  width: auto;
+  height: 120px;
+
+  object-fit: contain;
+
+  transform: translateX(-160px);
+}
+
+
+/* ==================================================
+   FEATURE IMAGES
+   ================================================== */
+
+.featureImage {
+  width: 105px;
+  height: 105px;
+
+  object-fit: contain;
+
+  transform: translate(0px, 0px) scale(3);
+}
+
+.featureImage2 {
+  width: 105px;
+  height: 105px;
+
+  object-fit: contain;
+
+  transform: translate(-15px, 0px) scale(2.6);
+}
+
+.featureImage3 {
+  width: 105px;
+  height: 105px;
+
+  object-fit: contain;
+
+  transform: translate(0px, 10px) scale(3);
+}
+
+.feature:first-child {
+  transform: translateX(-40px);
+}
+
+.feature:last-child {
+  transform: translateX(40px);
+}
+
+
+/* ==================================================
+   HERO
+   ================================================== */
+
+.hero {
+  position: relative;
+
+  width: 100%;
+  min-height: 550px;
+
+  overflow: hidden;
+}
+
+.heroBackground {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.heroOverlay {
+  position: relative;
+  z-index: 2;
+
+  min-height: 550px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  padding: 30px 5% 35px;
+}
+
+.heroPhrase {
+  width: 550px;
+  height: auto;
+
+  align-self: flex-start;
+
+  transform: translate(-110px, -70px) scale(1.4);
+  transform-origin: top left;
+}
+
+.heroButtons {
+  width: 70%;
+
+  display: flex;
+
+  gap: 30px;
+}
+
+.lostButton,
+.foundButton {
+  flex: 1;
+
+  min-height: 110px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px 30px;
+
+  border-radius: 60px;
+
+  font-size: clamp(24px, 3vw, 48px);
+
+  text-align: center;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.lostButton {
+  background: #10069f;
+  color: #ffcc00;
+
+  border: 7px solid #ffcc00;
+}
+
+.foundButton {
+  background: #ffcc00;
+  color: #10069f;
+
+  border: 7px solid #10069f;
+}
+
+.lostButton:hover,
+.foundButton:hover {
+  transform: translateY(-4px);
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ==================================================
+   FEATURES
+   ================================================== */
+
+.features {
+  min-height: 260px;
+
+  background: white;
+
+  display: grid;
+  grid-template-columns: 1fr 2px 1fr 2px 1fr;
+
+  align-items: center;
+
+  padding: 35px 7%;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+}
+
+.featureIcon {
+  width: 105px;
+  height: 105px;
+
+  border-radius: 50%;
+
+  background: #ffcc00;
+  color: #10069f;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.feature p {
+  margin: 18px 0 0;
+
+  font-size: clamp(22px, 2.4vw, 40px);
+}
+
+.divider {
+  height: 160px;
+  width: 2px;
+
+  background: #333;
+}
+
+
+/* ==================================================
+   RECENT ITEMS
+   ================================================== */
+
+.recentSection {
+  background: #edf5f7;
+
+  padding: 45px 5% 55px;
+}
+
+.recentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 35px;
+}
+
+.recentHeader h2 {
+  margin: 0;
+
+  color: #071747;
+
+  font-size: clamp(28px, 3vw, 46px);
+  font-weight: 800;
+}
+
+.viewAll {
+  font-size: clamp(20px, 2vw, 34px);
+}
+
+.itemsGrid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: clamp(20px, 4vw, 100px);
+}
+
+.itemCard {
+  overflow: hidden;
+
+  background: #f8f8ee;
+
+  border-radius: 28px;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.itemImage {
+  display: block;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 0.92;
+
+  object-fit: cover;
+}
+
+.noPhotoThumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e1e5e8;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.searchItemImage.noPhotoThumbnail {
+  display: flex;
+}
+
+.itemInfo {
+  padding: 14px 18px 22px;
+}
+
+.status {
+  width: 55%;
+
+  padding: 5px 10px;
+
+  border-radius: 9px;
+
+  text-align: center;
+
+  font-weight: 700;
+  font-size: 18px;
+
+  border: 3px solid #10069f;
+}
+
+.status.found {
+  background: #ffcc00;
+  color: #111;
+}
+
+.status.lost {
+  background: #10069f;
+  color: #ffcc00;
+
+  border-color: #ffcc00;
+}
+
+.itemInfo h3 {
+  margin: 12px 0 16px;
+
+  font-size: clamp(18px, 1.7vw, 28px);
+}
+
+.itemDetail {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 10px 0;
+
+  color: #555;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 14px;
+}
+
+
+/* ==================================================
+   BOTTOM
+   ================================================== */
+
+.bottomSection {
+  position: relative;
+
+  min-height: 260px;
+
+  background: #10069f;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.reportButton {
+  position: relative;
+  z-index: 2;
+
+  background: #ffcc00;
+  color: #111;
+
+  padding: 25px 60px;
+
+  border-radius: 14px;
+
+  font-size: clamp(28px, 4vw, 55px);
+
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3);
+
+  transition: transform 0.2s ease;
+}
+
+.reportButton:hover {
+  transform: translateY(-4px);
+}
+
+.paw {
+  position: absolute;
+
+  color: rgba(255, 204, 0, 0.55);
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 80px;
+}
+
+.pawLeft {
+  left: -10px;
+
+  transform: rotate(-25deg);
+}
+
+.pawRight {
+  right: -10px;
+
+  transform: rotate(25deg);
+}
+
+
+/* ==================================================
+   TABLET
+   ================================================== */
+
+@media (max-width: 900px) {
+  .heroPhrase {
+    width: 300px;
+  }
+
+  .heroButtons {
+    width: 100%;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+
+    gap: 30px;
+  }
+
+  .divider {
+    width: 70%;
+    height: 1px;
+
+    margin: auto;
+  }
+
+  .itemsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ==================================================
+   PHONE
+   ================================================== */
+
+@media (max-width: 600px) {
+  .header {
+    height: 80px;
+
+    justify-content: center;
+  }
+
+  .hero {
+    min-height: 580px;
+  }
+
+  .heroOverlay {
+    min-height: 580px;
+
+    padding: 30px 20px;
+  }
+
+  .heroPhrase {
+    width: 240px;
+    max-width: 90%;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .lostButton,
+  .foundButton {
+    min-height: 75px;
+
+    border-width: 5px;
+  }
+
+  .features {
+    padding: 35px 20px;
+  }
+
+  .featureIcon {
+    width: 85px;
+    height: 85px;
+
+    font-size: 38px;
+  }
+
+  .recentSection {
+    padding: 35px 20px;
+  }
+
+  .recentHeader {
+    align-items: flex-end;
+  }
+
+  .itemsGrid {
+    grid-template-columns: 1fr;
+
+    gap: 25px;
+  }
+
+  .itemCard {
+    max-width: 420px;
+    width: 100%;
+
+    margin: auto;
+  }
+
+  .bottomSection {
+    min-height: 220px;
+  }
+
+  .reportButton {
+    padding: 20px 40px;
+  }
+}
+
+
+/* ==================================================
+   DASHBOARD
+   ================================================== */
+
+.dashboardPage {
+  min-height: 100vh;
+
+  background: white;
+
+  position: relative;
+}
+
+.dashboard {
+  display: grid;
+
+  grid-template-columns: 440px 1fr;
+
+  gap: 55px;
+
+  padding: 5px 0.5% 0;
+}
+
+
+/* ==================================================
+   SIDEBAR
+   ================================================== */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+
+  gap: 28px;
+
+  background: #eef1f2;
+
+  padding: 28px 22px;
+
+  align-self: start;
+
+  position: relative;
+  z-index: 1;
+}
+
+.sidebarButton {
+  width: 100%;
+  height: 78px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 10px 22px;
+
+  background: #ffcc00;
+  color: #10069f;
+
+  border-radius: 22px;
+
+  white-space: nowrap;
+
+  font-family: "Quicksand";
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.sidebarButton:hover {
+  transform: translateX(5px);
+}
+
+.sidebarButton.sidebarActive {
+  background: #10069f;
+  color: #ffcc00;
+}
+
+
+/* SIDEBAR PNG ICONS */
+
+.sidebarIcon {
+  display: block;
+
+  width: 45px;
+  height: 45px;
+
+  min-width: 45px;
+  max-width: 45px;
+
+  min-height: 45px;
+  max-height: 45px;
+
+  object-fit: contain;
+
+  flex: 0 0 45px;
+}
+
+.lostSidebarIcon {
+  transform: translate(11px, 8px) scale(5);
+}
+
+
+/* SIDEBAR BUTTON TEXT */
+
+.sidebarButton .sidebarButtonText {
+  display: block;
+
+  width: auto;
+  height: auto;
+
+  flex: 1;
+
+  margin: 0;
+  padding: 0;
+
+  font-family: "Quicksand";
+
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+
+/* ==================================================
+   DASHBOARD CONTENT
+   ================================================== */
+
+.dashboardContent {
+  min-width: 0;
+
+  padding: 10px 20px;
+
+  transform: translateX(-70px);
+}
+
+
+/* EXTRA GRAY PIECE */
+
+.sidebar::after {
+  content: "";
+
+  position: absolute;
+
+  left: -22px;
+  top: 100%;
+
+  width: calc(100% + 22px);
+  height: 24px;
+
+  background: #eef1f2;
+
+  z-index: -1;
+}
+
+
+/* ==================================================
+   LOST ITEM FORM
+   ================================================== */
+
+.lostForm {
+  width: 350px;
+  max-width: 100%;
+
+  margin-left: 70px;
+  margin-top: -5px;
+}
+
+.lostForm h1 {
+  margin: 0;
+
+  color: #10069f;
+  font-family: "Quicksand", sans-serif;
+  font-size: 34px;
+  line-height: 1.05;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.lostForm h2 {
+  margin: 4px 0 36px;
+
+  color: #ffcc00;
+  font-family: "Quicksand", sans-serif;
+  font-size: 26px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.lostForm h1,
+.lostForm h2 {
+  transform: translateX(-50px);
+}
+
+
+/* ==================================================
+   FORM FIELDS
+   ================================================== */
+
+.formField {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 18px;
+
+  transform: translateX(15px);
+}
+
+.formField > label:first-child {
+  margin: 0 0 4px;
+
+  color: #111;
+
+  font-size: 24px;
+  line-height: 1.05;
+  font-weight: 400;
+
+  display: block;
+
+  transform: translateX(-43px);
+
+  font-family: "Quicksand", sans-serif;
+}
+
+.requiredMark {
+  color: #c62828;
+  font-weight: 700;
+}
+
+.formError {
+  color: #c62828;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 4px 0 12px;
+}
+
+
+/* ==================================================
+   SELECTS + INPUTS
+   ================================================== */
+
+.formField select,
+.formField input:not(.hiddenPhotoInput) {
+  width: 100%;
+  height: 32px;
+
+  transform: translateX(-45px);
+
+  padding: 0 12px;
+
+  background: #e9eff5;
+  color: #10069f;
+
+  border: none;
+  border-radius: 999px;
+
+  outline: none;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.formField select {
+  appearance: auto;
+  -webkit-appearance: menulist;
+
+  border-radius: 999px;
+}
+
+.formField input[type="date"] {
+  border-radius: 999px;
+}
+
+
+/* ==================================================
+   PHOTO
+   ================================================== */
+
+.photoField {
+  margin-top: 2px;
+}
+
+.formField .photoUpload {
+  width: 350px;
+  height: 200px;
+
+  transform: translateX(-45px);
+
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  background: #ffffff;
+
+  border: 2px solid #e9eff5;
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  color: #777;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+.formField .photoUpload span {
+  margin: 0;
+  padding: 0;
+
+  transform: none;
+
+  color: #777;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 12px;
+}
+
+.uploadPhotoIcon {
+  display: block;
+
+  width: 55px;
+  height: 55px;
+
+  object-fit: contain;
+}
+
+.uploadedPhoto {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  border-radius: 12px;
+}
+
+.formField .hiddenPhotoInput,
+.hiddenPhotoInput {
+  display: none !important;
+
+  width: 0 !important;
+  height: 0 !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  position: absolute !important;
+
+  opacity: 0 !important;
+
+  pointer-events: none !important;
+}
+
+
+/* ==================================================
+   DESCRIPTION
+   ================================================== */
+
+.formField .descriptionField {
+  display: block;
+
+  width: 350px;
+  min-height: 100px;
+
+  transform: translateX(-45px);
+
+  padding: 12px 15px;
+
+  background: #e9eff5;
+  color: #10069f;
+
+  border: none;
+  border-radius: 16px;
+
+  outline: none;
+
+  resize: vertical;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.formField .descriptionField::placeholder {
+  color: #6d7190;
+
+  opacity: 1;
+}
+
+
+/* ==================================================
+   LOCK PAGE WHILE CROPPING
+   ================================================== */
+
+.pageLocked {
+  pointer-events: none !important;
+
+  user-select: none !important;
+}
+
+
+/* ==================================================
+   PHOTO CROPPER BACKDROP
+   ================================================== */
+
+.cropBackdrop {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  z-index: 999999;
+
+  background: rgba(0, 0, 0, 0.18);
+
+  pointer-events: auto !important;
+}
+
+
+/* ==================================================
+   PHOTO CROPPER WINDOW
+   ================================================== */
+
+.cropOverlay {
+  position: absolute;
+
+  top: 4vh;
+  bottom: 4vh;
+
+  left: 3vw;
+  right: 5vw;
+
+  background: #000000;
+
+  z-index: 1000000;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  pointer-events: auto !important;
+}
+
+
+/* ==================================================
+   CROPPER BUTTONS
+   ================================================== */
+
+.cropButtons {
+  position: absolute;
+
+  right: 24px;
+  bottom: 24px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  z-index: 1000001;
+
+  pointer-events: auto !important;
+}
+
+.cropButtons button {
+  min-width: 90px;
+
+  padding: 12px 20px;
+
+  border: none;
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  pointer-events: auto !important;
+}
+
+.cropButtons button:first-child {
+  background: white;
+  color: #10069f;
+}
+
+.cropButtons button:last-child {
+  background: #ffcc00;
+  color: #10069f;
+}
+
+/* ==================================================
+   SEARCH ITEMS PAGE
+   ================================================== */
+
+.searchPage {
+  width: 100%;
+  max-width: 1050px;
+
+  padding-top: 0;
+
+  /* Move the ENTIRE Search Items page to the right */
+  transform: translate(70px, -5px);
+
+  font-family: "Quicksand", sans-serif;
+}
+
+
+/* SEARCH PAGE TITLE */
+
+.searchHeading {
+  transform: translateX(-50px);
+}
+
+.searchHeading h1 {
+  margin: 0;
+
+  color: #10069f;
+
+  font-size: 34px;
+  line-height: 1.05;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.searchHeading h2 {
+  margin: 4px 0 28px;
+
+  color: #ffcc00;
+
+  font-size: 26px;
+  line-height: 1.1;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* ==================================================
+   SEARCH CONTROLS
+   ================================================== */
+
+.searchControls {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 45px;
+
+  transform: translateX(-30px);
+}
+
+
+/* SEARCH BAR */
+
+.searchBar {
+  width: 650px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 22px;
+
+  background: #e9eff5;
+
+  border-radius: 999px;
+}
+
+.searchBarIcon {
+  flex-shrink: 0;
+
+  margin-right: 15px;
+
+  color: #10069f;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.searchBar input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #10069f;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.searchBar input::placeholder {
+  color: #44517c;
+
+  opacity: 1;
+}
+
+
+/* FILTER BUTTON */
+
+.filterButton {
+  height: 58px;
+
+  min-width: 170px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  padding: 0 22px;
+
+  background: white;
+  color: #171747;
+
+  border: 3px solid #171747;
+  border-radius: 18px;
+
+  cursor: pointer;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.filterIcon {
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 28px;
+}
+
+.searchFilterPanel {
+  width: min(650px, 100%);
+  margin: 14px 0 0;
+  padding: 16px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #dce3ed;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(16, 6, 159, 0.08);
+  color: #171747;
+  font: 700 15px "Quicksand", sans-serif;
+}
+
+.searchFilterPanel select {
+  min-width: 210px;
+  min-height: 40px;
+  padding: 6px 12px;
+  border: 1px solid #c8cede;
+  border-radius: 10px;
+  background: #fff;
+  color: #171747;
+  font: 600 14px "Quicksand", sans-serif;
+}
+
+.searchFilterPanel button {
+  border: 0;
+  background: transparent;
+  color: #10069f;
+  font: 700 14px "Quicksand", sans-serif;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+
+/* ==================================================
+   SEARCH TABS
+   ================================================== */
+
+.searchTabs {
+  width: 650px;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 45px;
+
+  margin-top: 28px;
+
+  transform: translateX(-30px);
+}
+
+.searchTab {
+  height: 58px;
+
+  padding: 0 25px;
+
+  background: #ffcc00;
+  color: #10069f;
+
+  border: none;
+  border-radius: 999px;
+
+  cursor: pointer;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 24px;
+
+  white-space: nowrap;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.searchTab:hover {
+  transform: translateY(-2px);
+}
+
+.searchTabActive {
+  background: #10069f;
+  color: #ffcc00;
+}
+
+
+/* ==================================================
+   SEARCH RESULTS
+   ================================================== */
+
+.searchResults {
+  width: calc(100% + 20px);
+
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 55px;
+
+  margin-top: 30px;
+
+  transform: translateX(-30px);
+}
+
+.searchItemCard {
+  min-width: 0;
+}
+
+.searchItemImage {
+  display: block;
+
+  width: 100%;
+  height: 175px;
+
+  object-fit: cover;
+
+  border-radius: 22px;
+}
+
+
+/* STATUS */
+
+.searchItemStatus {
+  width: 105px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 8px 0 7px;
+
+  border-radius: 999px;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.searchItemFound {
+  background: #ffcc00;
+  color: #111;
+
+  border: 3px solid #10069f;
+}
+
+.searchItemLost {
+  background: #10069f;
+  color: #ffcc00;
+
+  border: 3px solid #ffcc00;
+}
+
+
+/* ITEM NAME */
+
+.searchItemCard h3 {
+  margin: 0 0 9px;
+
+  color: #111;
+
+  font-size: 17px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+
+/* LOCATION + DATE */
+
+.searchItemDetail {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+
+  margin: 6px 0;
+
+  color: #333;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.searchItemDetail span {
+  width: 14px;
+
+  flex-shrink: 0;
+
+  color: #111;
+
+  text-align: center;
+}
+
+.searchItemDetail p {
+  margin: 0;
+
+  line-height: 1.3;
+}
+
+
+/* NO RESULTS */
+
+.noSearchResults {
+  margin-top: 40px;
+
+  color: #555;
+
+  font-family: "Quicksand", sans-serif;
+
+  font-size: 18px;
+}
+
+/* ==================================================
+   HOME HEADER SEARCH + LOGIN
+   ================================================== */
+
+.homeBrand {
+  display: flex;
+  align-items: center;
+
+  flex-shrink: 0;
+}
+
+.homeHeaderActions {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 20px;
+
+  margin-left: -120px;
+}
+
+
+/* HOME SEARCH BAR */
+
+.homeSearchBar {
+  width: 430px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 20px;
+
+  background: #e9eff5;
+
+  border-radius: 999px;
+}
+
+.homeSearchIcon {
+  flex-shrink: 0;
+
+  margin-right: 10px;
+
+  color: #10069f;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.homeSearchBar input {
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+
+  background: transparent;
+
+  border: none;
+  outline: none;
+
+  color: #10069f;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.homeSearchBar input::placeholder {
+  color: #44517c;
+  opacity: 1;
+}
+
+
+/* HOME LOGIN BUTTON */
+
+.homeLoginButton {
+  height: 46px;
+
+  min-width: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 25px;
+
+  background: #071c3c;
+  color: white;
+
+  border-radius: 999px;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.homeLoginButton:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
+}
+
+/* ==================================================
+   GLOBAL FONT
+   ================================================== */
+
+body,
+button,
+input,
+select,
+textarea,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+label {
+  font-family: "Quicksand", sans-serif;
+}
+
+/* CLICKABLE RECENT ITEM CARDS */
+
+.clickableItemCard {
+  cursor: pointer;
+  position: relative;
+  z-index: 5;
+  pointer-events: auto;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.clickableItemCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* ==================================================
+   REPORT SUBMITTED PAGE
+   ================================================== */
+
+.submittedPage {
+  width: 100%;
+  max-width: 1050px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding-top: 15px;
+
+  transform: translateX(45px);
+
+  font-family: "Quicksand", sans-serif;
+}
+
+
+/* HEADING */
+
+.submittedHeading {
+  width: 100%;
+  text-align: center;
+}
+
+.submittedHeading h1 {
+  margin: 0;
+
+  color: #10069f;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 45px;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.submittedHeading h2 {
+  margin: 2px 0 30px;
+
+  color: #ffcc00;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+
+/* REPORT SUMMARY */
+
+.submittedSummary {
+  width: 850px;
+  min-height: 220px;
+
+  display: grid;
+  grid-template-columns: 220px 3px 1fr;
+  align-items: center;
+
+  gap: 24px;
+
+  padding: 20px 25px;
+
+  background: #e9eff5;
+
+  border-radius: 18px;
+}
+
+
+/* PHOTO */
+
+.submittedPhoto {
+  width: 200px;
+  height: 180px;
+
+  overflow: hidden;
+
+  background: white;
+
+  border-radius: 22px;
+}
+
+.submittedPhoto img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.submittedPhotoPlaceholder {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #777;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+/* VERTICAL DIVIDER */
+
+.submittedDivider {
+  width: 3px;
+  height: 180px;
+
+  background: #222;
+
+  border-radius: 999px;
+}
+
+
+/* REPORT INFORMATION */
+
+.submittedInformation {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 13px;
+}
+
+.submittedRow {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: center;
+}
+
+.submittedLabel {
+  color: #555;
+
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.submittedRow strong {
+  color: #111;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+/* BUTTON AREA */
+
+.submittedButtons {
+  width: 850px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 45px;
+
+  margin-top: 30px;
+}
+
+
+/* VIEW REPORT */
+
+.viewReportButton,
+.anotherReportButton {
+  height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 15px;
+
+  border-radius: 18px;
+
+  cursor: pointer;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+/* DARK BLUE BUTTON */
+
+.viewReportButton {
+  background: #10069f;
+  color: #ffcc00;
+
+  border: 5px solid #ffcc00;
+}
+
+
+/* YELLOW BUTTON */
+
+.anotherReportButton {
+  background: #ffcc00;
+  color: #10069f;
+
+  border: 5px solid #10069f;
+}
+
+
+/* BUTTON HOVER */
+
+.viewReportButton,
+.anotherReportButton {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.viewReportButton:hover,
+.anotherReportButton:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* ==================================================
+   SUBMIT REPORT BUTTON
+   ================================================== */
+
+.submitReportButton {
+  width: 350px;
+  height: 58px;
+
+  margin-top: 8px;
+  margin-bottom: 35px;
+
+  transform: translateX(-30px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #10069f;
+  color: #ffcc00;
+
+  border: none;
+  border-radius: 999px;
+
+  cursor: pointer;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.submitReportButton:hover {
+  transform: translate(-30px, -3px);
+
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.submitReportButton:active {
+  transform: translate(-30px, 0);
+  box-shadow: none;
+}
+
+/* ==================================================
+   MY REPORTS PAGE
+   ================================================== */
+
+.reportsPage {
+  width: 100%;
+  max-width: 1180px;
+  padding: 42px 50px 60px;
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   HEADING
+   ================================================== */
+
+.reportsHeading h1 {
+  margin: 0;
+
+  color: #10069f;
+
+  font-family: Georgia, serif;
+  font-size: 46px;
+  font-weight: 700;
+}
+
+.reportsHeading h2 {
+  margin: 5px 0 28px;
+
+  color: #c99700;
+
+  font-size: 25px;
+  font-weight: 600;
+}
+
+
+/* ==================================================
+   FILTERS + SORT
+   ================================================== */
+
+.reportsControls {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+}
+
+.reportsFilters {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.reportFilterButton {
+  min-width: 145px;
+  height: 48px;
+
+  padding: 0 28px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffcc00;
+  color: #10069f;
+
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.reportFilterButton:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 5px 10px rgba(0, 0, 0, 0.12);
+}
+
+.reportFilterButton.active {
+  background: #10069f;
+  color: #ffcc00;
+}
+
+
+/* ==================================================
+   SORT BUTTON
+   ================================================== */
+
+.reportsSortButton {
+  min-width: 165px;
+  height: 48px;
+
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #e5e9ec;
+  color: #333333;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.reportsSortButton span {
+  font-size: 22px;
+  line-height: 1;
+}
+
+
+/* ==================================================
+   REPORT LIST
+   ================================================== */
+
+.reportsList {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+
+/* ==================================================
+   REPORT CARD
+   ================================================== */
+
+.reportCard {
+  width: 100%;
+  min-height: 170px;
+
+  display: grid;
+
+  grid-template-columns:
+    150px
+    minmax(240px, 1.2fr)
+    minmax(270px, 1fr)
+    200px;
+
+  align-items: stretch;
+
+  background: #edf1f3;
+
+  border-radius: 22px;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   REPORT PHOTO
+   ================================================== */
+
+.reportCardPhoto {
+  width: 130px;
+  height: 130px;
+
+  align-self: center;
+
+  overflow: hidden;
+
+  border-radius: 22px;
+
+  background: #d8dde0;
+}
+
+.reportCardPhoto img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* ==================================================
+   REPORT INFORMATION
+   ================================================== */
+
+.reportCardInfo {
+  padding: 3px 25px 3px 20px;
+
+  border-right: 2px solid #6f7478;
+
+  box-sizing: border-box;
+}
+
+.reportTypeBadge {
+  width: 105px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.reportTypeBadge.found {
+  background: #ffcc00;
+  color: #10069f;
+
+  border: 3px solid #10069f;
+}
+
+.reportTypeBadge.lost {
+  background: #10069f;
+  color: #ffcc00;
+
+  border: 3px solid #ffcc00;
+}
+
+.reportCardInfo h3 {
+  margin: 10px 0 8px;
+
+  color: #222222;
+
+  font-family: Georgia, serif;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.reportCardInfo p {
+  margin: 5px 0;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #555555;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reportSmallIcon {
+  width: 15px;
+
+  display: inline-flex;
+  justify-content: center;
+
+  color: #303030;
+
+  font-size: 12px;
+}
+
+
+/* ==================================================
+   STATUS
+   ================================================== */
+
+.reportCardStatus {
+  padding: 8px 24px;
+
+  border-right: 2px solid #6f7478;
+
+  box-sizing: border-box;
+}
+
+.statusBadge {
+  min-width: 115px;
+  width: fit-content;
+  height: 31px;
+
+  padding: 0 13px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.statusBadge.submitted {
+  background: #a9e2e4;
+  color: #08757a;
+}
+
+.statusBadge.match {
+  background: #b8ef8b;
+  color: #31820c;
+}
+
+.statusBadge.closed {
+  background: #a6aaa7;
+  color: #ffffff;
+}
+
+.reportCardStatus p {
+  margin: 12px 0 0;
+
+  color: #555555;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.45;
+}
+
+
+/* ==================================================
+   ACTION BUTTONS
+   ================================================== */
+
+.reportCardActions {
+  padding-left: 25px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 13px;
+  order: 0;
+}
+
+.reportDetailsButton,
+.reportSecondaryButton {
+  width: 170px;
+  height: 50px;
+
+  border-radius: 15px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.reportDetailsButton {
+  background: #ffffff;
+
+  color: #333333;
+
+  border: 2px solid #333333;
+}
+
+.reportSecondaryButton {
+  background: #d9dfe3;
+
+  color: #555555;
+
+  border: none;
+}
+
+.reportDetailsButton:hover,
+.reportSecondaryButton:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* ==================================================
+   RESPONSIVE MY REPORTS
+   ================================================== */
+
+@media (max-width: 1100px) {
+  .reportCard {
+    grid-template-columns:
+      130px
+      1fr
+      1fr;
+  }
+
+  .reportCardActions {
+    grid-column: 2 / 4;
+
+    padding: 18px 0 0;
+
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .reportCardStatus {
+    border-right: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .reportsPage {
+    padding: 30px 25px 50px;
+  }
+
+  .reportsControls {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .reportsFilters {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .reportCard {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+  }
+
+  .reportCardInfo,
+  .reportCardStatus {
+    padding: 0 0 18px;
+
+    border-right: none;
+    border-bottom: 2px solid #c1c6c9;
+  }
+
+  .reportCardActions {
+    padding: 0;
+
+    flex-direction: row;
+  }
+}
+
+/* ==================================================
+   MY REPORTS — LAYOUT FIX
+   ================================================== */
+
+.reportsPage {
+  width: 100%;
+  max-width: none;
+
+  padding: 25px 55px 45px;
+
+  box-sizing: border-box;
+}
+
+
+/* HEADING */
+
+.reportsHeading h1 {
+  margin: 0;
+
+  font-family: Georgia, serif;
+  font-size: 42px;
+  line-height: 1.05;
+
+  color: #10069f;
+}
+
+.reportsHeading h2 {
+  margin: 5px 0 24px;
+
+  font-size: 24px;
+  line-height: 1.2;
+
+  color: #c99700;
+}
+
+
+/* ==================================================
+   CONTROLS
+   ================================================== */
+
+.reportsControls {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.reportsFilters {
+  display: flex;
+  align-items: center;
+
+  gap: 28px;
+}
+
+.reportFilterButton {
+  min-width: 145px;
+  height: 46px;
+
+  padding: 0 26px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffcc00;
+  color: #10069f;
+
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.reportFilterButton.active {
+  background: #10069f;
+  color: #ffcc00;
+}
+
+.reportsSortButton {
+  width: 165px;
+  height: 46px;
+
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #e5e9ec;
+  color: #333333;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+/* ==================================================
+   REPORT LIST
+   ================================================== */
+
+.reportsList {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+
+/* ==================================================
+   REPORT CARD
+   ================================================== */
+
+.reportCard {
+  width: 100%;
+  min-height: 150px;
+
+  display: grid;
+
+  grid-template-columns:
+    135px
+    minmax(220px, 1.1fr)
+    minmax(240px, 1fr)
+    175px;
+
+  align-items: stretch;
+
+  padding: 15px;
+
+  background: #edf1f3;
+
+  border-radius: 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   PHOTO
+   ================================================== */
+
+.reportCardPhoto {
+  width: 115px;
+  height: 115px;
+
+  align-self: center;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: #d8dde0;
+}
+
+.reportCardPhoto img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* ==================================================
+   ITEM INFORMATION
+   ================================================== */
+
+.reportCardInfo {
+  min-width: 0;
+
+  padding: 2px 20px 2px 15px;
+
+  border-right: 2px solid #6f7478;
+
+  box-sizing: border-box;
+}
+
+.reportTypeBadge {
+  width: 95px;
+  height: 26px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+
+  box-sizing: border-box;
+}
+
+.reportTypeBadge.found {
+  background: #ffcc00;
+  color: #10069f;
+
+  border: 3px solid #10069f;
+}
+
+.reportTypeBadge.lost {
+  background: #10069f;
+  color: #ffcc00;
+
+  border: 3px solid #ffcc00;
+}
+
+.reportCardInfo h3 {
+  margin: 7px 0 6px;
+
+  font-family: Georgia, serif;
+  font-size: 18px;
+  line-height: 1.05;
+
+  color: #222222;
+}
+
+.reportCardInfo p {
+  margin: 4px 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: #555555;
+
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+
+/* ==================================================
+   STATUS
+   ================================================== */
+
+.reportCardStatus {
+  min-width: 0;
+
+  padding: 5px 20px;
+
+  border-right: 2px solid #6f7478;
+
+  box-sizing: border-box;
+}
+
+.statusBadge {
+  min-width: 105px;
+  width: fit-content;
+  height: 28px;
+
+  padding: 0 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reportCardStatus p {
+  margin: 10px 0 0;
+
+  font-size: 12px;
+  line-height: 1.35;
+
+  color: #555555;
+}
+
+
+/* ==================================================
+   ACTIONS
+   ================================================== */
+
+.reportCardActions {
+  padding-left: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 11px;
+}
+
+.reportDetailsButton,
+.reportSecondaryButton {
+  width: 155px;
+  height: 44px;
+
+  border-radius: 14px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.reportDetailsButton {
+  background: white;
+  color: #333333;
+
+  border: 2px solid #333333;
+}
+
+.reportSecondaryButton {
+  background: #d9dfe3;
+  color: #555555;
+
+  border: none;
+}
+
+
+/* ==================================================
+   KEEP THE PAGE SCROLLABLE
+   ================================================== */
+
+.dashboardContent {
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.reportsPage {
+  min-height: 100vh;
+}
+
+/* ==================================================
+   MY REPORTS — MATCH REST OF PANTHERFIND
+   ================================================== */
+
+/* Match Search Items page position */
+
+.reportsPage {
+  width: 100%;
+  max-width: none;
+
+  padding: 0;
+
+  /* Same general starting position as Search Items */
+  margin-left: 25px;
+  margin-top: -10px;
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   TITLE + SUBTITLE
+   ================================================== */
+
+.reportsHeading h1 {
+  margin: 0;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 36px;
+  line-height: 1.1;
+  font-weight: 700;
+
+  color: #10069f;
+}
+
+.reportsHeading h2 {
+  margin: 2px 0 28px;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 25px;
+  line-height: 1.15;
+  font-weight: 600;
+
+  color: #ffcc00;
+}
+
+
+/* ==================================================
+   CONTROLS
+   ================================================== */
+
+.reportsControls {
+  width: calc(100% - 55px);
+
+  margin-bottom: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.reportsFilters {
+  display: flex;
+  align-items: center;
+
+  gap: 46px;
+}
+
+
+/* These match the Search page pill style */
+
+.reportFilterButton {
+  min-width: 155px;
+  height: 58px;
+
+  padding: 0 28px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffcc00;
+  color: #10069f;
+
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow: none;
+}
+
+.reportFilterButton.active {
+  background: #10069f;
+  color: #ffcc00;
+}
+
+.reportFilterButton:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* Sort */
+
+.reportsSortButton {
+  width: 175px;
+  height: 52px;
+
+  padding: 0 20px;
+
+  border: none;
+  border-radius: 15px;
+
+  background: #e5e9ec;
+  color: #333333;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+/* ==================================================
+   REPORT LIST
+   ================================================== */
+
+.reportsList {
+  width: calc(100% - 55px);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+}
+
+
+/* ==================================================
+   REPORT CARD
+   ================================================== */
+
+.reportCard {
+  width: 100%;
+  min-height: 150px;
+
+  display: grid;
+
+  grid-template-columns:
+    135px
+    minmax(225px, 1.05fr)
+    minmax(250px, 1fr)
+    180px;
+
+  align-items: stretch;
+
+  padding: 15px;
+
+  background: #edf1f3;
+
+  border-radius: 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* ==================================================
+   PHOTO
+   ================================================== */
+
+.reportCardPhoto {
+  width: 115px;
+  height: 115px;
+
+  align-self: center;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+}
+
+.reportCardPhoto img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* ==================================================
+   ITEM INFORMATION
+   ================================================== */
+
+.reportCardInfo {
+  min-width: 0;
+
+  padding: 2px 20px 2px 15px;
+
+  border-right: 2px solid #6f7478;
+
+  box-sizing: border-box;
+}
+
+
+/* Keep Lost / Found badge Georgia like Search page */
+
+.reportTypeBadge {
+  width: 100px;
+  height: 27px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+
+  box-sizing: border-box;
+}
+
+.reportTypeBadge.found {
+  background: #ffcc00;
+  color: #10069f;
+
+  border: 3px solid #10069f;
+}
+
+.reportTypeBadge.lost {
+  background: #10069f;
+  color: #ffcc00;
+
+  border: 3px solid #ffcc00;
+}
+
+
+/* Item name should match Search cards */
+
+.reportCardInfo h3 {
+  margin: 8px 0 7px;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 17px;
+  line-height: 1.1;
+  font-weight: 700;
+
+  color: #111111;
+}
+
+
+/* Location / date / case number */
+
+.reportCardInfo p {
+  margin: 4px 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 500;
+
+  color: #444444;
+}
+
+.reportSmallIcon {
+  width: 14px;
+
+  display: inline-flex;
+  justify-content: center;
+
+  font-family: "Quicksand", sans-serif;
+}
+
+
+/* ==================================================
+   STATUS
+   ================================================== */
+
+.reportCardStatus {
+  min-width: 0;
+
+  padding: 5px 22px;
+
+  border-right: 2px solid #6f7478;
+
+  box-sizing: border-box;
+}
+
+.statusBadge {
+  min-width: 110px;
+  width: fit-content;
+  height: 28px;
+
+  padding: 0 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reportCardStatus p {
+  margin: 11px 0 0;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 500;
+
+  color: #444444;
+}
+
+
+/* ==================================================
+   ACTION BUTTONS
+   ================================================== */
+
+.reportCardActions {
+  padding-left: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 12px;
+}
+
+.reportDetailsButton,
+.reportSecondaryButton {
+  width: 160px;
+  height: 45px;
+
+  border-radius: 14px;
+
+  font-family: "Quicksand", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+}
+
+.reportDetailsButton {
+  background: #ffffff;
+  color: #333333;
+
+  border: 2px solid #333333;
+}
+
+.reportSecondaryButton {
+  background: #d9dfe3;
+  color: #555555;
+
+  border: none;
+}
+
+.reportDetailsButton:hover,
+.reportSecondaryButton:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ==================================================
+   ALL BUTTONS — QUICKSAND
+   ================================================== */
+
+button {
+  font-family: "Quicksand", sans-serif !important;
+}
+
+/* =========================================
+   FIU HOMEPAGE FOOTER
+   ========================================= */
+
+.fiuFooter {
+  width: 100%;
+  background: #081e5b;
+  color: white;
+  padding: 38px 48px 20px;
+  box-sizing: border-box;
+  font-family: "Quicksand", sans-serif;
+}
+
+.fiuFooterContent {
+  width: 100%;
+  display: grid;
+  grid-template-columns:
+    1.05fr
+    1.65fr
+    1.9fr
+    1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.fiuFooterBrand,
+.fiuFooterColumn,
+.fiuFooterHelp {
+  min-width: 0;
+}
+
+.fiuFooterLogoRow {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 14px;
+}
+
+.fiuWordmark {
+  font-family: Georgia, serif;
+  font-size: 57px;
+  line-height: 0.9;
+  font-weight: 700;
+  color: white;
+  padding-right: 13px;
+  border-right: 2px solid #ffcc00;
+}
+
+.fiuUniversityName {
+  font-family: Georgia, serif;
+  font-size: 14px;
+  line-height: 1.05;
+  font-weight: 700;
+  color: white;
+}
+
+.fiuFooter h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: white;
+}
+
+.fiuFooterBrand > h3 {
+  margin-top: 7px;
+}
+
+.fiuFooter a {
+  color: #ffcc00;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fiuFooterBrand > a {
+  display: block;
+  width: fit-content;
+  margin: 6px 0;
+}
+
+.fiuFooterLinkColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.fiuFooterLinkColumns > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fiuSocials {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.fiuSocials a {
+  width: 23px;
+  height: 23px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid white;
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fiuFooterHelp {
+  text-align: right;
+}
+
+.fiuFooterHelp h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.fiuFooterHelp p {
+  margin: 5px 0;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.fiuFooterHelp a {
+  font-size: inherit;
+}
+
+.fiuFooterBottom {
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid
+    rgba(255, 255, 255, 0.25);
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 26px;
+}
+
+.fiuFooterBottom p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.fiuFooterBottom span {
+  color: #ffcc00;
+  font-weight: 700;
+}
+
+
+/* SMALLER SCREENS */
+
+@media (max-width: 1100px) {
+
+  .fiuFooterContent {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .fiuFooterHelp {
+    text-align: left;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .fiuFooter {
+    padding:
+      32px 24px 20px;
+  }
+
+  .fiuFooterContent {
+    grid-template-columns:
+      1fr;
+    gap: 30px;
+  }
+
+  .fiuFooterLinkColumns {
+    grid-template-columns:
+      1fr;
+    gap: 8px;
+  }
+
+  .fiuFooterBottom {
+    justify-content:
+      flex-start;
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 7px;
+  }
+
+}
+.fiuFooterColumn {
+  transform: translateX(0px);
+}
+
+/* =========================================
+   GLOBAL INBOX DRAWER
+   ========================================= */
+
+.inboxDrawer,
+.inboxDrawer * {
+  font-family: "Quicksand", sans-serif !important;
+}
+
+.inboxDrawer {
+  position: fixed;
+
+  top: 260px;
+  right: 0;
+
+  z-index: 9999;
+
+  width: min(500px, 100vw);
+
+  display: flex;
+  align-items: center;
+
+  transform: translateX(calc(100% - 110px));
+
+  transition: transform 0.38s ease;
+}
+
+.inboxDrawerOpen {
+  transform: translateX(0);
+}
+
+
+/* =========================================
+   INBOX TAB
+   ========================================= */
+
+.inboxTab {
+  position: relative;
+
+  width: 110px;
+  min-width: 110px;
+  height: 165px;
+
+  padding: 5px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffcc00;
+
+  border: 5px solid #10069f;
+  border-right: none;
+
+  border-radius: 30px 0 0 30px;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  touch-action: none;
+  user-select: none;
+}
+
+.inboxTab:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* =========================================
+   INBOX ICON
+   ========================================= */
+
+.inboxIconWrapper {
+  position: relative;
+
+  width: 100px;
+  height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inboxIcon {
+  display: block;
+
+  width: 125px;
+  height: 125px;
+  transform: translateY(-10px);
+  object-fit: contain;
+}
+
+.inboxNotificationBubble {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  min-width: 27px;
+  height: 27px;
+  padding: 0 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #ef4135;
+  color: #ffffff;
+  font-family: "Quicksand", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+
+/* =========================================
+   INBOX LABEL
+   ========================================= */
+
+.inboxTabText {
+  margin-top: -3px;
+
+  color: #10069f;
+
+  font-family: "Quicksand", sans-serif !important;
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+
+/* =========================================
+   YELLOW NOTIFICATION PANEL
+   ========================================= */
+
+.inboxPanel {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+  height: 460px;
+  max-height: calc(100vh - 190px);
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  background: #ffcc00;
+  border: 5px solid #10069f;
+  border-right: none;
+  border-radius: 30px 0 0 30px;
+
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: stretch;
+  overscroll-behavior: contain;
+}
+
+.inboxPanelEmpty {
+  justify-content: center;
+}
+
+.inboxEmptyState {
+  padding: 28px 18px;
+  color: #10069f;
+  text-align: center;
+  font-family: "Quicksand", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   INDIVIDUAL NOTIFICATION
+   ========================================= */
+
+.inboxMessage {
+  width: 100%;
+  min-height: 100px;
+
+  padding: 12px 16px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 15px;
+
+  background: #ffffff;
+
+  border: none;
+  border-radius: 30px;
+
+  text-align: left;
+
+  cursor: default;
+
+  box-sizing: border-box;
+
+  font-family: "Quicksand", sans-serif !important;
+
+  transition: background 0.15s ease;
+  flex: 0 0 auto;
+}
+
+.inboxMessageOpen {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: "Quicksand", sans-serif;
+}
+
+.inboxMessageOpen:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.inboxMessage:hover {
+  transform: none;
+  box-shadow: none;
+
+  background: #f8f8f8;
+}
+
+.inboxMessageNew {
+  border: 2px solid #f0b900;
+  box-shadow: 0 5px 15px rgba(16, 6, 159, 0.1);
+}
+
+.inboxMessageSeen {
+  background: #f1f2f5;
+  border: 2px solid #e1e2e8;
+}
+
+.inboxMessageSeen .inboxMessageIconCircle {
+  background: #dedfe5;
+}
+
+.inboxMessageSeen .inboxMessageIcon {
+  opacity: 0.58;
+  filter: grayscale(0.65);
+}
+
+.inboxMessageSeen .inboxMessageText h3,
+.inboxMessageSeen .inboxMessageText > p {
+  color: #666978;
+}
+
+.notificationNewLabel,
+.notificationSeenLabel {
+  width: fit-content;
+  margin-bottom: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font: 700 11px/1.2 "Quicksand", sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notificationNewLabel {
+  background: #fff2b8;
+  color: #795900;
+}
+
+.notificationSeenLabel {
+  background: #e3e4e9;
+  color: #686b77;
+}
+
+
+/* =========================================
+   NOTIFICATION ICON CIRCLE
+   ========================================= */
+
+.inboxMessageIconCircle {
+  width: 68px;
+  min-width: 68px;
+  height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffcc00;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================
+   NOTIFICATION PNG
+   ========================================= */
+
+.inboxMessageIcon {
+  display: block;
+
+  width: 50px;
+  height: 50px;
+
+  object-fit: contain;
+}
+
+
+/* =========================================
+   NOTIFICATION TEXT
+   ========================================= */
+
+.inboxMessageText {
+  min-width: 0;
+  flex: 1;
+  padding: 7px 0;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.inboxMessageText h3 {
+  margin: 0 0 4px;
+
+  color: #10069f;
+
+  font-family: "Quicksand", sans-serif !important;
+
+  font-size: 19px;
+  line-height: 1.05;
+  font-weight: 700;
+}
+
+.inboxMessageText p {
+  margin: 0;
+
+  color: #d89d00;
+
+  font-family: "Quicksand", sans-serif !important;
+
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.matchDecisionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.matchConfirmButton,
+.matchDeclineButton,
+.inboxReportLink {
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 18px;
+  font: 700 13px "Quicksand", sans-serif;
+  cursor: pointer;
+}
+
+.matchConfirmButton {
+  border: 2px solid #10069f;
+  background: #10069f;
+  color: #fff;
+}
+
+.matchDeclineButton {
+  border: 1px solid #d4d4dc;
+  background: #fff;
+  color: #343442;
+}
+
+.inboxReportLink {
+  min-height: auto;
+  padding: 5px 2px;
+  border: 0;
+  background: transparent;
+  color: #10069f;
+  text-decoration: underline;
+}
+
+.matchResolution {
+  margin-top: 10px;
+}
+
+.matchResolvedLabel {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #10069f;
+  font-size: 14px;
+}
+
+.matchResolutionMessage {
+  margin: 5px 0 7px !important;
+  color: #555 !important;
+}
+
+.matchReceipt {
+  grid-column: 1 / -1;
+  order: 1;
+  width: 100%;
+  margin: 4px 0 16px;
+  padding: 18px 20px;
+  box-sizing: border-box;
+  border: 1px solid #d9dcf2;
+  border-left: 5px solid #10069f;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f8f8ff 0%, #fff 100%);
+  color: #373847;
+  font-family: "Quicksand", sans-serif;
+}
+
+.matchReceiptHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #10069f;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.matchReceiptHeader time { color: #747686; font-size: 12px; font-weight: 600; text-transform: none; letter-spacing: 0; }
+.matchReceipt h4 { margin: 8px 0; color: #171747; font-size: 18px; }
+.matchReceipt p { margin: 6px 0; font-size: 14px; line-height: 1.45; }
+.matchReceiptNote { color: #6d5a25; }
+.matchReceipt ul { margin: 9px 0 12px; padding-left: 20px; font-size: 13px; }
+
+.matchDetailsPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 0 20px;
+  padding: 18px 22px;
+  border: 2px solid #ffcc00;
+  border-radius: 18px;
+  background: #fff9dc;
+}
+
+.matchDetailsPrompt strong {
+  color: #10069f;
+  font-size: 18px;
+}
+
+.matchDetailsPrompt p {
+  margin: 5px 0 0;
+  color: #4b4b59;
+  line-height: 1.45;
+}
+
+@media (max-width: 700px) {
+  .matchDetailsPrompt {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+.matchReceipt a { color: #10069f; font-weight: 700; }
+.matchReceiptActions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
+.matchReceiptActions button { padding: 9px 13px; border: 0; border-radius: 9px; background: #10069f; color: #fff; font: 700 13px "Quicksand", sans-serif; cursor: pointer; }
+.reportDetailReceipt { margin-top: 26px; }
+
+.optionalLabel {
+  margin-left: 4px;
+  color: #676b78;
+  font-size: 0.88em;
+  font-weight: 500;
+}
+
+
+/* =========================================
+   SMALLER SCREENS
+   ========================================= */
+
+@media (max-width: 650px) {
+
+  .inboxDrawer {
+  position: fixed;
+  top: 175px;
+  right: 0;
+  z-index: 9999;
+
+  width: 100vw;
+
+  display: flex;
+  align-items: flex-start;
+
+  transform: translateX(calc(100% - 90px));
+
+  transition: transform 0.38s ease;
+}
+
+  .inboxDrawerOpen {
+    transform: translateX(0);
+  }
+
+  .inboxTab {
+    width: 90px;
+    min-width: 90px;
+
+    height: 150px;
+  }
+
+  .inboxIconWrapper {
+    width: 85px;
+    height: 85px;
+  }
+
+  .inboxIcon {
+    width: 85px;
+    height: 85px;
+  }
+
+  .inboxPanel {
+    width: calc(100% - 90px);
+    flex: none;
+    max-height: calc(100vh - 190px);
+  }
+
+}
+.inboxLostIcon {
+  transform: translate(14px, 8px)scale(5);
+}
+
+.inboxReportIcon {
+  transform: translate(14px, 30px)scale(5);
+}
+
+/* Mobile and small tablet layouts */
+@media (max-width: 760px) {
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .header {
+    height: 78px;
+    min-height: 78px;
+    padding: 6px 14px;
+    gap: 0;
+    justify-content: flex-start;
+  }
+
+  .header:has(.homeBrand) {
+    height: auto;
+    min-height: 0;
+    flex-wrap: wrap;
+    padding-top: 8px;
+    padding-bottom: 10px;
+  }
+
+  .headerIcon {
+    width: 68px;
+    height: 68px;
+    transform: none;
+  }
+
+  .headerLogo {
+    width: min(58vw, 300px);
+    height: auto;
+    max-height: 58px;
+    transform: none;
+    object-fit: contain;
+  }
+
+  .homeBrand {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .homeHeaderActions {
+    width: 100%;
+    min-width: 0;
+    flex: 0 0 100%;
+    margin: 8px 0 0;
+    gap: 8px;
+  }
+
+  .homeSearchBar {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 40px;
+    padding: 0 10px;
+  }
+
+  .homeSearchBar input {
+    min-width: 0;
+    font-size: 14px;
+  }
+
+  .homeSearchBar input::placeholder {
+    font-size: 12px;
+  }
+
+  .homeLoginButton {
+    min-width: 0;
+    height: 40px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .hero,
+  .heroOverlay {
+    min-height: 500px;
+  }
+
+  .heroOverlay {
+    padding: 28px 18px;
+  }
+
+  .heroPhrase {
+    width: min(80vw, 300px);
+    transform: none;
+  }
+
+  .heroButtons {
+    width: 100%;
+  }
+
+  .features {
+    min-height: 0;
+    padding: 28px 18px;
+  }
+
+  .feature:first-child,
+  .feature:last-child {
+    transform: none;
+  }
+
+  .feature p {
+    font-size: 22px;
+  }
+
+  .recentHeader {
+    align-items: center;
+    gap: 12px;
+  }
+
+  .recentHeader h2 {
+    font-size: clamp(24px, 6vw, 34px);
+  }
+
+  .viewAll {
+    flex: 0 0 auto;
+    font-size: 16px;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    flex-direction: row;
+    gap: 8px;
+    padding: 10px 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    align-self: auto;
+    position: sticky;
+    top: 0;
+    background: #eef1f2;
+    scrollbar-width: thin;
+  }
+
+  .sidebar::after {
+    display: none;
+  }
+
+  .sidebarButton {
+    width: auto;
+    min-width: max-content;
+    height: 52px;
+    gap: 7px;
+    padding: 7px 12px;
+    border-radius: 15px;
+  }
+
+  .sidebarButton:hover {
+    transform: none;
+  }
+
+  .sidebarIcon {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    min-height: 25px;
+    max-height: 25px;
+    flex-basis: 25px;
+  }
+
+  .lostSidebarIcon {
+    transform: none;
+  }
+
+  .sidebarButton .sidebarButtonText {
+    flex: 0 0 auto;
+    font-size: 14px;
+  }
+
+  .dashboardContent {
+    width: 100%;
+    min-height: 0;
+    padding: 22px 16px 40px;
+    transform: none;
+  }
+
+  .lostForm {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .lostForm h1,
+  .lostForm h2 {
+    transform: none;
+    white-space: normal;
+  }
+
+  .lostForm h1 {
+    font-size: clamp(27px, 7vw, 34px);
+  }
+
+  .lostForm h2 {
+    margin-bottom: 26px;
+    font-size: clamp(21px, 5vw, 26px);
+  }
+
+  .formField {
+    width: 100%;
+    transform: none;
+  }
+
+  .formField > label:first-child {
+    transform: none;
+    font-size: 18px;
+  }
+
+  .formField select,
+  .formField input:not(.hiddenPhotoInput),
+  .formField .photoUpload,
+  .formField .descriptionField {
+    width: 100%;
+    max-width: 100%;
+    min-height: 44px;
+    height: auto;
+    transform: none;
+    font-size: 16px;
+  }
+
+  .formField .photoUpload {
+    height: 190px;
+  }
+
+  .formField .descriptionField {
+    min-height: 120px;
+  }
+
+  .submitReportButton {
+    width: 100%;
+    max-width: 100%;
+    min-height: 54px;
+    height: auto;
+    padding: 12px 18px;
+    transform: none;
+    font-size: 17px;
+  }
+
+  .submitReportButton:hover,
+  .submitReportButton:active {
+    transform: none;
+  }
+
+  .searchPage {
+    width: 100%;
+    max-width: none;
+    transform: none;
+  }
+
+  .searchHeading {
+    transform: none;
+  }
+
+  .searchHeading h1,
+  .searchHeading h2 {
+    white-space: normal;
+  }
+
+  .searchHeading h1 {
+    font-size: clamp(28px, 7vw, 34px);
+  }
+
+  .searchHeading h2 {
+    margin-bottom: 20px;
+    font-size: clamp(20px, 5vw, 26px);
+  }
+
+  .searchControls {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    transform: none;
+  }
+
+  .searchBar {
+    width: 100%;
+    height: 50px;
+    padding: 0 14px;
+  }
+
+  .searchBar input {
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .searchBar input::placeholder {
+    font-size: 14px;
+  }
+
+  .filterButton {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    font-size: 17px;
+  }
+
+  .searchFilterPanel {
+    width: 100%;
+  }
+
+  .searchFilterPanel select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .searchTabs {
+    max-width: 100%;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 4px;
+  }
+
+  .searchTab {
+    flex: 0 0 auto;
+    min-width: 112px;
+    padding: 11px 18px;
+    font-size: 16px;
+  }
+
+  .searchResults {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 14px;
+    margin-top: 22px;
+    transform: none;
+  }
+
+  .searchItemImage {
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+  }
+
+  .searchItemCard h3 {
+    overflow-wrap: anywhere;
+    font-size: 15px;
+  }
+
+  .searchItemDetail {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .reportsPage {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .reportsHeading h1 {
+    font-size: clamp(30px, 8vw, 40px);
+  }
+
+  .reportsHeading h2 {
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .reportsControls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .reportsFilters {
+    width: 100%;
+    overflow-x: auto;
+    gap: 8px;
+  }
+
+  .reportFilterButton {
+    flex: 0 0 auto;
+    min-width: 105px;
+    height: 42px;
+    padding: 0 14px;
+    font-size: 15px;
+  }
+
+  .reportsSortButton {
+    width: 100%;
+  }
+
+  .reportsList {
+    width: 100%;
+    gap: 14px;
+  }
+
+  .reportCard {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .reportCardPhoto {
+    width: min(100%, 240px);
+    height: auto;
+    aspect-ratio: 1;
+    align-self: flex-start;
+  }
+
+  .reportCardInfo,
+  .reportCardStatus {
+    width: 100%;
+    padding: 0 0 14px;
+    border: 0;
+    border-bottom: 1px solid #c1c6c9;
+  }
+
+  .reportCardInfo p {
+    overflow-wrap: anywhere;
+    font-size: 14px;
+  }
+
+  .reportCardActions {
+    width: 100%;
+    padding: 0;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .reportDetailsButton,
+  .reportSecondaryButton {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .matchReceipt {
+    width: 100%;
+    padding: 15px;
+    overflow-wrap: anywhere;
+  }
+
+  .matchReceiptActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .matchReceiptActions a,
+  .matchReceiptActions button {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .submittedPage {
+    width: 100%;
+    max-width: none;
+    padding: 10px 0 30px;
+    transform: none;
+  }
+
+  .submittedHeading h1 {
+    font-size: clamp(32px, 9vw, 45px);
+  }
+
+  .submittedHeading h2 {
+    margin-bottom: 20px;
+    font-size: clamp(20px, 5.5vw, 28px);
+  }
+
+  .submittedSummary {
+    width: 100%;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .submittedPhoto {
+    width: min(100%, 260px);
+    height: auto;
+    aspect-ratio: 1.2;
+    justify-self: center;
+  }
+
+  .submittedDivider {
+    display: none;
+  }
+
+  .submittedRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .submittedLabel,
+  .submittedRow strong {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+  }
+
+  .submittedButtons {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .viewReportButton,
+  .anotherReportButton {
+    min-height: 58px;
+    height: auto;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+
+  .matchDetailsPrompt {
+    padding: 15px;
+  }
+
+  .matchDecisionButtons {
+    flex-wrap: wrap;
+  }
+
+  .reportDetailReceipt {
+    width: 100%;
+  }
+
+  .dashboardContent > div[style*="calc(100% - 55px)"] {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .inboxDrawer {
+    width: 100vw;
+    align-items: center;
+  }
+
+  .inboxPanel {
+    width: calc(100vw - 90px);
+    flex: 0 1 auto;
+    min-width: 0;
+    max-height: calc(100dvh - 32px);
+    height: min(460px, calc(100dvh - 32px));
+    padding: 8px;
+    border-radius: 22px 0 0 22px;
+  }
+
+  .inboxPanelEmpty {
+    justify-content: center;
+  }
+
+  .inboxMessage {
+    min-width: 0;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .inboxMessageText {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .inboxMessageText h3 {
+    font-size: 16px;
+  }
+
+  .inboxMessageText p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .fiuFooter {
+    padding: 28px 18px 18px;
+  }
+
+  .cropOverlay {
+    width: min(100vw - 24px, 560px);
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    padding: 14px;
+  }
+
+  .cropOverlay img,
+  .cropOverlay canvas {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1050px) {
+  .dashboard {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .sidebar {
+    padding: 22px 14px;
+    gap: 18px;
+  }
+
+  .sidebarButton {
+    height: 66px;
+    gap: 10px;
+    padding: 8px 13px;
+  }
+
+  .sidebarButton .sidebarButtonText {
+    font-size: 18px;
+    white-space: normal;
+  }
+
+  .dashboardContent {
+    transform: none;
+    padding-right: 16px;
+    padding-left: 10px;
+  }
+
+  .lostForm {
+    margin-left: 15px;
+  }
+
+  .searchPage {
+    max-width: 100%;
+    transform: none;
+  }
+
+  .searchControls {
+    gap: 16px;
+    transform: none;
+  }
+
+  .searchBar {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .searchResults {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    transform: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .headerIcon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .headerLogo {
+    width: min(52vw, 220px);
+    max-height: 48px;
+  }
+
+  .homeHeaderActions {
+    gap: 6px;
+  }
+
+  .homeSearchBar {
+    width: 42vw;
+  }
+
+  .homeSearchBar input::placeholder {
+    color: transparent;
+  }
+
+  .homeLoginButton {
+    padding: 0 8px;
+    font-size: 12px;
+  }
+
+  .sidebar {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .sidebarButton {
+    padding: 7px 9px;
+  }
+
+  .sidebarButton .sidebarButtonText {
+    font-size: 13px;
+  }
+
+  .searchResults {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .searchItemImage {
+    aspect-ratio: 1.35 / 1;
+  }
+
+  .inboxTab {
+    width: 76px;
+    min-width: 76px;
+  }
+
+  .inboxPanel {
+    width: calc(100vw - 76px);
+  }
+
+  .inboxDrawer {
+    width: 100vw;
+  }
+}
