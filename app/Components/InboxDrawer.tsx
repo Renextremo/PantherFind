@@ -251,7 +251,7 @@ export default function InboxDrawer() {
         aria-expanded={inboxOpen}
       >
         <div className="inboxIconWrapper">
-          <img src="/inbox.png" alt="" className="inboxIcon" draggable="false" />
+          <img src="/images/inbox.png" alt="" className="inboxIcon" draggable="false" />
           {notificationCount > 0 && (
             <span className="inboxNotificationBubble" aria-label={`${notificationCount} unread messages`}>
               {notificationCount}
@@ -268,7 +268,7 @@ export default function InboxDrawer() {
           notifications.map((notification) => (
             <div className={`inboxMessage ${notification.seen ? "inboxMessageSeen" : "inboxMessageNew"}`} key={notification.id}>
               <div className="inboxMessageIconCircle">
-                <img src="/reports-blue.png" alt="" draggable="false" className="inboxMessageIcon" />
+                <img src="/images/reports-blue.png" alt="" draggable="false" className="inboxMessageIcon" />
               </div>
               <div className="inboxMessageText">
                 <span className={notification.seen ? "notificationSeenLabel" : "notificationNewLabel"}>

@@ -1538,7 +1538,7 @@ export default function EditReportPage() {
                   <>
 
                     <img
-                      src="/upload-photo.png"
+                      src="/images/upload-photo.png"
                       alt=""
                       className="uploadPhotoIcon"
                     />

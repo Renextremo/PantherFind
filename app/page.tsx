@@ -65,7 +65,7 @@ export default function Home() {
     {
       id: "demo-1",
       demoId: 1,
-      image: "/headphones.jpg",
+      image: "/images/headphones.jpg",
       status: "Found",
       name: "Blue Headphones",
       location: "Green Library",
@@ -75,7 +75,7 @@ export default function Home() {
     {
       id: "demo-2",
       demoId: 2,
-      image: "/waterbottle.jpeg",
+      image: "/images/waterbottle.jpeg",
       status: "Lost",
       name: "Yellow water bottle",
       location:
@@ -86,7 +86,7 @@ export default function Home() {
     {
       id: "demo-3",
       demoId: 3,
-      image: "/keychain.png",
+      image: "/images/keychain.png",
       status: "Found",
       name: "Dorm Keychain",
       location: "Charles E. Perry",
@@ -96,7 +96,7 @@ export default function Home() {
     {
       id: "demo-4",
       demoId: 4,
-      image: "/backpack.jpg",
+      image: "/images/backpack.jpg",
       status: "Lost",
       name: "Yellow backpack",
       location: "Graham Center",
@@ -395,13 +395,13 @@ export default function Home() {
         <div className="homeBrand">
 
           <img
-            src="/logo.png"
+            src="/images/logo.png"
             alt="PantherFind logo"
             className="headerIcon"
           />
 
           <img
-            src="/logotext.png"
+            src="/images/logotext.png"
             alt="PantherFind"
             className="headerLogo"
           />
@@ -459,7 +459,7 @@ export default function Home() {
       <section className="hero">
 
         <img
-          src="/picture1.jpeg"
+          src="/images/picture1.jpeg"
           className="heroBackground"
           alt=""
         />
@@ -467,7 +467,7 @@ export default function Home() {
         <div className="heroOverlay">
 
           <img
-            src="/phrase.png"
+            src="/images/phrase.png"
             alt="Lost something? Let's find it"
             className="heroPhrase"
           />
@@ -502,7 +502,7 @@ export default function Home() {
         <div className="feature">
 
           <img
-            src="/logo1.png"
+            src="/images/logo1.png"
             alt="Magnifying glass"
             className="featureImage"
           />
@@ -520,7 +520,7 @@ export default function Home() {
         <div className="feature">
 
           <img
-            src="/logo2.png"
+            src="/images/logo2.png"
             alt="Bell"
             className="featureImage2"
           />
@@ -538,7 +538,7 @@ export default function Home() {
         <div className="feature">
 
           <img
-            src="/logo3.png"
+            src="/images/logo3.png"
             alt="People"
             className="featureImage3"
           />

@@ -12,29 +12,29 @@ const sidebarButtons = [
     id: "lost",
     label: "Report a Lost Item",
     href: "/lost",
-    blueIcon: "/lost-blue.png",
-    yellowIcon: "/lost-yellow.png",
+    blueIcon: "/images/lost-blue.png",
+    yellowIcon: "/images/lost-yellow.png",
   },
   {
     id: "found",
     label: "Report a Found Item",
     href: "/found",
-    blueIcon: "/found-blue.png",
-    yellowIcon: "/found-yellow.png",
+    blueIcon: "/images/found-blue.png",
+    yellowIcon: "/images/found-yellow.png",
   },
   {
     id: "search",
     label: "Search Items",
     href: "/search",
-    blueIcon: "/search-blue.png",
-    yellowIcon: "/search-yellow.png",
+    blueIcon: "/images/search-blue.png",
+    yellowIcon: "/images/search-yellow.png",
   },
   {
     id: "reports",
     label: "My Reports",
     href: "/reports",
-    blueIcon: "/reports-blue.png",
-    yellowIcon: "/reports-yellow.png",
+    blueIcon: "/images/reports-blue.png",
+    yellowIcon: "/images/reports-yellow.png",
   },
 ] as const;
 
@@ -47,7 +47,7 @@ export default function DashboardLayout({
       <header className="header">
         <Link href="/">
           <img
-            src="/logo.png"
+            src="/images/logo.png"
             alt="PantherFind"
             className="headerIcon"
           />
@@ -55,7 +55,7 @@ export default function DashboardLayout({
 
         <Link href="/">
           <img
-            src="/logotext.png"
+            src="/images/logotext.png"
             alt="PantherFind"
             className="headerLogo"
           />

@@ -97,7 +97,7 @@ const demoItems: SearchItem[] = [
     location: "Green Library",
     campus: "MMC",
     date: "Sept 18, 2026",
-    image: "/headphones.jpg",
+    image: "/images/headphones.jpg",
     brand: "Sony",
     itemDetail: "Headphones / Earphones",
     description:
@@ -113,7 +113,7 @@ const demoItems: SearchItem[] = [
       "Wellness and Recreation Center",
     campus: "MMC",
     date: "Sept 16, 2026",
-    image: "/waterbottle.jpeg",
+    image: "/images/waterbottle.jpeg",
     brand: "Owala",
     itemDetail: "Water Bottle",
     description:
@@ -128,7 +128,7 @@ const demoItems: SearchItem[] = [
     location: "Charles E. Perry",
     campus: "MMC",
     date: "Sept 14, 2026",
-    image: "/keychain.png",
+    image: "/images/keychain.png",
     itemDetail: "Dorm",
     description:
       "Dorm key found near Charles E. Perry with a distinctive keychain attached. The key was found in a common area.",
@@ -142,7 +142,7 @@ const demoItems: SearchItem[] = [
     location: "Graham Center",
     campus: "MMC",
     date: "Sept 13, 2026",
-    image: "/backpack.jpg",
+    image: "/images/backpack.jpg",
     itemDetail: "Backpack",
     description:
       "Yellow backpack lost inside the Graham Center. It may have been left near one of the seating or study areas.",

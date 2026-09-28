@@ -1129,7 +1129,7 @@ export default function FoundPage() {
 
                   <>
                     <img
-                      src="/upload-photo.png"
+                      src="/images/upload-photo.png"
                       alt=""
                       className="uploadPhotoIcon"
                     />

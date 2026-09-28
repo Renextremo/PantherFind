@@ -1251,7 +1251,7 @@ export default function LostPage() {
 
                 <>
                   <img
-                    src="/upload-photo.png"
+                    src="/images/upload-photo.png"
                     alt=""
                     className="uploadPhotoIcon"
                   />
