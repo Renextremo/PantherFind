@@ -55,7 +55,7 @@ export default function DashboardLayout({
 
         <Link href="/">
           <img
-            src="/logotext.PNG"
+            src="/logotext.png"
             alt="PantherFind"
             className="headerLogo"
           />

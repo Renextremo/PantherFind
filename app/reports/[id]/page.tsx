@@ -121,7 +121,7 @@ const demoReports: Report[] = [
       "Blue Sony headphones found inside the Green Library near a study area. The headphones were left unattended on a table.",
 
     image:
-      "/headphones.JPG",
+      "/headphones.jpg",
 
     caseNumber:
       "MMC-1842",
@@ -171,7 +171,7 @@ const demoReports: Report[] = [
       "Yellow Owala water bottle lost at the Wellness and Recreation Center. It may have been left near the workout or seating area.",
 
     image:
-      "/waterbottle.JPEG",
+      "/waterbottle.jpeg",
 
     caseNumber:
       "MMC-5621",
@@ -221,7 +221,7 @@ const demoReports: Report[] = [
       "Dorm key found near Charles E. Perry with a distinctive keychain attached. The key was found in a common area.",
 
     image:
-      "/keychain.PNG",
+      "/keychain.png",
 
     caseNumber:
       "MMC-7314",
@@ -271,7 +271,7 @@ const demoReports: Report[] = [
       "Yellow backpack lost inside the Graham Center. It may have been left near one of the seating or study areas.",
 
     image:
-      "/backpack.JPG",
+      "/backpack.jpg",
 
     caseNumber:
       "MMC-4096",

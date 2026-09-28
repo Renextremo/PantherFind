@@ -65,7 +65,7 @@ export default function Home() {
     {
       id: "demo-1",
       demoId: 1,
-      image: "/headphones.JPG",
+      image: "/headphones.jpg",
       status: "Found",
       name: "Blue Headphones",
       location: "Green Library",
@@ -75,7 +75,7 @@ export default function Home() {
     {
       id: "demo-2",
       demoId: 2,
-      image: "/waterbottle.JPEG",
+      image: "/waterbottle.jpeg",
       status: "Lost",
       name: "Yellow water bottle",
       location:
@@ -86,7 +86,7 @@ export default function Home() {
     {
       id: "demo-3",
       demoId: 3,
-      image: "/keychain.PNG",
+      image: "/keychain.png",
       status: "Found",
       name: "Dorm Keychain",
       location: "Charles E. Perry",
@@ -96,7 +96,7 @@ export default function Home() {
     {
       id: "demo-4",
       demoId: 4,
-      image: "/backpack.JPG",
+      image: "/backpack.jpg",
       status: "Lost",
       name: "Yellow backpack",
       location: "Graham Center",
@@ -502,7 +502,7 @@ export default function Home() {
         <div className="feature">
 
           <img
-            src="/logo1.PNG"
+            src="/logo1.png"
             alt="Magnifying glass"
             className="featureImage"
           />
@@ -520,7 +520,7 @@ export default function Home() {
         <div className="feature">
 
           <img
-            src="/logo2.PNG"
+            src="/logo2.png"
             alt="Bell"
             className="featureImage2"
           />
@@ -538,7 +538,7 @@ export default function Home() {
         <div className="feature">
 
           <img
-            src="/logo3.PNG"
+            src="/logo3.png"
             alt="People"
             className="featureImage3"
           />

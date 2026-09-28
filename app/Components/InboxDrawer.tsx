@@ -268,7 +268,7 @@ export default function InboxDrawer() {
           notifications.map((notification) => (
             <div className={`inboxMessage ${notification.seen ? "inboxMessageSeen" : "inboxMessageNew"}`} key={notification.id}>
               <div className="inboxMessageIconCircle">
-                <img src="/reports-blue.PNG" alt="" draggable="false" className="inboxMessageIcon" />
+                <img src="/reports-blue.png" alt="" draggable="false" className="inboxMessageIcon" />
               </div>
               <div className="inboxMessageText">
                 <span className={notification.seen ? "notificationSeenLabel" : "notificationNewLabel"}>
