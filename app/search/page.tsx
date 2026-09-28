@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   useEffect,
   useState,
 } from "react";
@@ -150,7 +151,7 @@ const demoItems: SearchItem[] = [
 ];
 
 
-export default function SearchPage() {
+function SearchPageContent() {
 
   const router =
     useRouter();
@@ -854,4 +855,12 @@ export default function SearchPage() {
 
   );
 
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={null}>
+      <SearchPageContent />
+    </Suspense>
+  );
 }
