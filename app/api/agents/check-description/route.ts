@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { geminiErrorResponse, generateGeminiContent } from "../../../lib/gemini-api";
 
 export const runtime = "nodejs";
 
@@ -21,10 +22,9 @@ type CheckResult = {
 const MAX_TEXT_LENGTH = 2_000;
 
 export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
+  if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
-      { error: "Description checking is not configured." },
+      { error: "Gemini description checking is not configured. Add GEMINI_API_KEY to the server environment." },
       { status: 503 }
     );
   }
@@ -66,37 +66,12 @@ export async function POST(request: Request) {
   };
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-6-luna",
-        store: false,
-        max_output_tokens: 220,
-        instructions:
-          'Review a lost-and-found report description for clarity and factual support. Use only the supplied description and item fields; do not infer missing facts or invent item traits. Return JSON with exactly one top-level key, review, whose value has exactly: summary (one short review sentence), suggestedDescription (optional concise corrected description, only when a useful clarity correction or removal of an unsupported claim is needed), concerns (array of at most 2 short strings). Preserve the user’s meaning. Flag material claims not supported by the supplied fields, but do not decide item ownership or identity. If there are no concerns, return an empty concerns array.',
-        input: `Report fields: ${JSON.stringify(knownDetails)}\nDescription to check: ${description}`,
-        text: { format: { type: "json_object" } },
-      }),
+    const output = await generateGeminiContent({
+      maxOutputTokens: 220,
+      responseMimeType: "application/json",
+      temperature: 0.1,
+      parts: [{ text: `Review a lost-and-found report description for clarity and factual support. Use only the supplied description and item fields; do not infer missing facts or invent item traits. Return JSON with exactly one top-level key, review, whose value has exactly: summary (one short review sentence), suggestedDescription (optional concise corrected description, only when a useful clarity correction or removal of an unsupported claim is needed), concerns (array of at most 2 short strings). Preserve the user’s meaning. Flag material claims not supported by the supplied fields, but do not decide item ownership or identity. If there are no concerns, return an empty concerns array.\n\nReport fields: ${JSON.stringify(knownDetails)}\nDescription to check: ${description}`}],
     });
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Description checking is temporarily unavailable." },
-        { status: 502 }
-      );
-    }
-
-    const result = await response.json();
-    const output = (result.output || [])
-      .flatMap((item: { content?: Array<{ type?: string; text?: string }> }) =>
-        item.content || []
-      )
-      .find((content: { type?: string }) => content.type === "output_text")
-      ?.text;
 
     if (!output) throw new Error("Empty model response");
 
@@ -125,10 +100,8 @@ export async function POST(request: Request) {
         concerns,
       },
     } satisfies CheckResult);
-  } catch {
-    return NextResponse.json(
-      { error: "Description checking is temporarily unavailable." },
-      { status: 502 }
-    );
+  } catch (error) {
+    const failure = geminiErrorResponse(error, "Gemini description checking is temporarily unavailable.");
+    return NextResponse.json({ error: failure.error, retryAfterSeconds: failure.retryAfterSeconds }, { status: failure.status });
   }
 }

@@ -7,6 +7,16 @@ import DashboardLayout from "../Components/DashboardLayout";
 import { generateReportDescription } from "../lib/report-description";
 import { runReportAgents } from "../lib/report-agents";
 import { saveReportsWithQuotaFallback } from "../lib/report-storage";
+import {
+  analyzeReportPhoto,
+  canonicalItemCategory,
+  categoryLabel,
+  categoryOptionForForm,
+  PhotoReviewDecision,
+  VisualAttributes,
+  VisualCandidate,
+} from "../lib/visual-attributes";
+import PhotoAnalysisPanel from "../Components/PhotoAnalysisPanel";
 
 
 const itemOptions = [
@@ -245,6 +255,12 @@ export default function FoundPage() {
   ] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoAnalysis, setPhotoAnalysis] = useState<VisualAttributes | null>(null);
+  const [photoAnalysisImage, setPhotoAnalysisImage] = useState<string | null>(null);
+  const [photoAnalysisModel, setPhotoAnalysisModel] = useState("");
+  const [photoAnalysisError, setPhotoAnalysisError] = useState("");
+  const [photoReviewIssue, setPhotoReviewIssue] = useState<"mismatch" | "ambiguous" | null>(null);
+  const [photoReviewDecision, setPhotoReviewDecision] = useState<(PhotoReviewDecision & { image: string }) | null>(null);
 
 
   const onCropComplete =
@@ -277,6 +293,12 @@ export default function FoundPage() {
 
     setImage(imageUrl);
     setCroppedImage(null);
+    setPhotoAnalysis(null);
+    setPhotoAnalysisImage(null);
+    setPhotoAnalysisModel("");
+    setPhotoAnalysisError("");
+    setPhotoReviewIssue(null);
+    setPhotoReviewDecision(null);
     setFormError("");
 
     setCrop({
@@ -306,6 +328,12 @@ export default function FoundPage() {
       setCroppedImage(
         finalImage
       );
+      setPhotoAnalysis(null);
+      setPhotoAnalysisImage(null);
+      setPhotoAnalysisModel("");
+      setPhotoAnalysisError("");
+      setPhotoReviewIssue(null);
+      setPhotoReviewDecision(null);
 
       setImage(null);
 
@@ -323,7 +351,81 @@ export default function FoundPage() {
   }
 
 
-  async function submitReport() {
+  function chooseDetectedCategory() {
+    if (!photoAnalysis || !croppedImage) return;
+    const category = canonicalItemCategory(photoAnalysis.itemType);
+    if (!category) return;
+    const option = categoryOptionForForm(category, "found");
+    if (!option) return;
+    setItem(option);
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "corrected",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem: option,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function keepSelectedCategory() {
+    if (!photoAnalysis || !croppedImage) return;
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "kept",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem: item,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function selectPhotoCandidate(candidate: VisualCandidate) {
+    if (!photoAnalysis || !croppedImage) return;
+    const category = canonicalItemCategory(candidate.itemType || candidate.label) || "other";
+    const option = categoryOptionForForm(category, "found") || "Other";
+    const selectedAnalysis: VisualAttributes = {
+      ...photoAnalysis,
+      itemType: candidate.itemType || candidate.label,
+      primaryColor: candidate.primaryColor || photoAnalysis.primaryColor,
+      brand: candidate.brand || null,
+      styleType: candidate.styleType || photoAnalysis.styleType,
+      mainObjectClear: true,
+      candidateItems: [],
+      confidence: { ...photoAnalysis.confidence, itemType: "high" },
+    };
+    setPhotoAnalysis(selectedAnalysis);
+    setItem(option);
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "selected-object",
+      detectedItemType: selectedAnalysis.itemType,
+      selectedItem: option,
+      selectedObject: candidate.label,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function confirmSelectedObject() {
+    if (!photoAnalysis || !croppedImage) return;
+    setPhotoAnalysis({ ...photoAnalysis, mainObjectClear: true, candidateItems: [] });
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "manual-object-selection",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem: item,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+
+  async function submitReport(skipPhotoAnalysis = false) {
     const brandElement =
       document.getElementById(
         "foundBrand"
@@ -360,12 +462,6 @@ export default function FoundPage() {
     const missingCampus =
       !campus;
 
-    const missingLocation =
-      !location;
-
-    const missingDate =
-      !dateElement?.value;
-
     const missingPhoto =
       !croppedImage;
 
@@ -373,12 +469,10 @@ export default function FoundPage() {
     if (
       missingItem ||
       missingCampus ||
-      missingLocation ||
-      missingPhoto ||
-      missingDate
+      missingPhoto
     ) {
       setFormError(
-        "Please add an item, photo, campus, location, and date found to submit your report."
+        "Please add an item, campus, and photo to submit your report."
       );
 
       return;
@@ -387,6 +481,67 @@ export default function FoundPage() {
 
     setFormError("");
     setIsSubmitting(true);
+
+    const brand = brandElement?.value ? brandElement.selectedOptions[0]?.text || "" : "";
+    const itemDetail = typeElement?.value ? typeElement.selectedOptions[0]?.text || "" : "";
+    const color = colorElement?.value ? colorElement.selectedOptions[0]?.text || "" : "";
+    const enteredDescription = descriptionElement?.value.trim() || "";
+    let visualAttributes: VisualAttributes | null = null;
+    let photoReview: PhotoReviewDecision | null = null;
+
+    if (skipPhotoAnalysis) {
+      photoReview = {
+        outcome: "analysis-unavailable-manual",
+        detectedItemType: null,
+        selectedItem: item,
+        confirmedAt: new Date().toISOString(),
+      };
+    } else {
+      const analysisResult = photoAnalysisImage === croppedImage && photoAnalysis
+        ? { ok: true as const, analysis: photoAnalysis, model: photoAnalysisModel }
+        : await analyzeReportPhoto(croppedImage, item, enteredDescription);
+      if (!analysisResult.ok) {
+        setPhotoAnalysisError(analysisResult.error);
+        setPhotoReviewIssue(null);
+        setIsSubmitting(false);
+        return;
+      }
+      visualAttributes = analysisResult.analysis;
+      setPhotoAnalysis(visualAttributes);
+      setPhotoAnalysisImage(croppedImage);
+      setPhotoAnalysisModel(analysisResult.model);
+      setPhotoAnalysisError("");
+
+      const savedDecision = photoReviewDecision?.image === croppedImage && photoReviewDecision.selectedItem === item
+        ? photoReviewDecision
+        : null;
+      if (!visualAttributes.mainObjectClear && savedDecision?.outcome !== "selected-object" && savedDecision?.outcome !== "manual-object-selection") {
+        setPhotoReviewIssue("ambiguous");
+        setIsSubmitting(false);
+        return;
+      }
+      const detectedCategory = canonicalItemCategory(visualAttributes.itemType);
+      const selectedCategory = canonicalItemCategory(item);
+      const acknowledgedMismatch = savedDecision && ["corrected", "kept", "selected-object"].includes(savedDecision.outcome);
+      if (detectedCategory && selectedCategory && detectedCategory !== selectedCategory && visualAttributes.confidence.itemType !== "low" && !acknowledgedMismatch) {
+        setPhotoReviewIssue("mismatch");
+        setIsSubmitting(false);
+        return;
+      }
+      photoReview = savedDecision ? {
+        outcome: savedDecision.outcome,
+        detectedItemType: savedDecision.detectedItemType,
+        selectedItem: savedDecision.selectedItem,
+        selectedObject: savedDecision.selectedObject,
+        confirmedAt: savedDecision.confirmedAt,
+      } : {
+        outcome: "matched",
+        detectedItemType: visualAttributes.itemType,
+        selectedItem: item,
+        confirmedAt: new Date().toISOString(),
+      };
+      setPhotoReviewIssue(null);
+    }
 
 
     /*
@@ -473,10 +628,10 @@ export default function FoundPage() {
       CREATE REPORT
     */
 
-    const brand = brandElement?.value ? brandElement.selectedOptions[0]?.text || "" : "";
-    const itemDetail = typeElement?.value ? typeElement.selectedOptions[0]?.text || "" : "";
-    const color = colorElement?.value ? colorElement.selectedOptions[0]?.text || "" : "";
-    const description = descriptionElement?.value.trim() || await generateReportDescription({
+    const manualDescription = [color, brand, itemDetail, item].filter(Boolean).join(" ");
+    const description = enteredDescription || (skipPhotoAnalysis || photoReview?.outcome === "kept"
+      ? `${manualDescription} found${location ? ` near ${location}` : ""} at ${campus}.`
+      : await generateReportDescription({
       reportType: "found",
       item,
       brand,
@@ -485,7 +640,8 @@ export default function FoundPage() {
       campus,
       location,
       image: croppedImage,
-    });
+      visualAttributes,
+    }));
 
     const report = {
       id:
@@ -519,6 +675,10 @@ export default function FoundPage() {
         "",
 
       description,
+
+      visualAttributes,
+
+      photoReview,
 
       image:
         croppedImage,
@@ -612,12 +772,15 @@ export default function FoundPage() {
 
               <select
                 id="foundItem"
+                required
                 value={item}
                 onChange={(event) => {
                   setItem(
                     event.target.value
                   );
 
+                  setPhotoReviewDecision(null);
+                  setPhotoReviewIssue(null);
                   setFormError("");
                 }}
               >
@@ -1003,6 +1166,7 @@ export default function FoundPage() {
 
               <select
                 id="foundCampus"
+                required
                 value={campus}
                 onChange={(event) => {
                   setCampus(
@@ -1043,7 +1207,7 @@ export default function FoundPage() {
               <div className="formField">
 
                 <label htmlFor="foundLocation">
-                  Location <span className="requiredMark" aria-hidden="true">*</span>
+                  Location
                 </label>
 
                 <select
@@ -1090,13 +1254,12 @@ export default function FoundPage() {
             <div className="formField">
 
               <label htmlFor="dateFound">
-                Date Found <span className="requiredMark" aria-hidden="true">*</span>
+                Date Found
               </label>
 
               <input
                 id="dateFound"
                 type="date"
-                required
                 onChange={() =>
                   setFormError("")
                 }
@@ -1154,6 +1317,21 @@ export default function FoundPage() {
 
             </div>
 
+            <PhotoAnalysisPanel
+              analysis={photoAnalysis}
+              error={photoAnalysisError}
+              issue={photoReviewIssue}
+              selectedItem={item}
+              suggestedItem={photoAnalysis?.itemType ? categoryLabel(canonicalItemCategory(photoAnalysis.itemType) || photoAnalysis.itemType) : null}
+              isBusy={isSubmitting}
+              onChangeCategory={chooseDetectedCategory}
+              onKeepCategory={keepSelectedCategory}
+              onSelectCandidate={selectPhotoCandidate}
+              onConfirmSelectedObject={confirmSelectedObject}
+              onRetry={() => void submitReport()}
+              onContinueWithoutAnalysis={() => void submitReport(true)}
+            />
+
 
             {/* DESCRIPTION */}
 
@@ -1166,7 +1344,7 @@ export default function FoundPage() {
               <textarea
                 id="foundDescription"
                 className="descriptionField"
-                placeholder="Optional. Add details, or leave blank and AI will draft a description from the photo and location."
+                placeholder="Optional. Add details, or leave blank and AI will draft a description from the photo and any location provided."
                 onChange={() =>
                   setFormError("")
                 }
@@ -1198,10 +1376,10 @@ export default function FoundPage() {
             <button
               type="button"
               className="submitReportButton"
-              onClick={submitReport}
+              onClick={() => void submitReport()}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "AI reviewing report…" : "Submit Report"}
+            {isSubmitting ? "Reviewing report…" : "Submit Report"}
             </button>
 
           </div>

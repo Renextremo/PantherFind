@@ -18,6 +18,9 @@ import Cropper, {
 import DashboardLayout from "../../../Components/DashboardLayout";
 import { notifyReportsUpdated, saveReportsWithQuotaFallback } from "../../../lib/report-storage";
 import { INBOX_STORAGE_KEY, InboxNotification, saveInboxNotifications } from "../../../lib/inbox";
+import { analyzeReportPhoto, canonicalItemCategory, categoryLabel, categoryOptionForForm } from "../../../lib/visual-attributes";
+import type { PhotoReviewDecision, VisualAttributes, VisualCandidate } from "../../../lib/visual-attributes";
+import PhotoAnalysisPanel from "../../../Components/PhotoAnalysisPanel";
 
 
 type Report = {
@@ -38,6 +41,8 @@ type Report = {
   itemDetail?: string;
 
   color?: string;
+  visualAttributes?: VisualAttributes | null;
+  photoReview?: PhotoReviewDecision;
 
   campus?: string;
 
@@ -508,6 +513,14 @@ export default function EditReportPage() {
       null
     );
 
+  const [photoChanged, setPhotoChanged] = useState(false);
+  const [photoAnalysis, setPhotoAnalysis] = useState<VisualAttributes | null>(null);
+  const [photoAnalysisImage, setPhotoAnalysisImage] = useState<string | null>(null);
+  const [photoAnalysisModel, setPhotoAnalysisModel] = useState("");
+  const [photoAnalysisError, setPhotoAnalysisError] = useState("");
+  const [photoReviewIssue, setPhotoReviewIssue] = useState<"mismatch" | "ambiguous" | null>(null);
+  const [photoReviewDecision, setPhotoReviewDecision] = useState<(PhotoReviewDecision & { image: string }) | null>(null);
+
 
   const [
     formError,
@@ -614,6 +627,10 @@ export default function EditReportPage() {
         foundReport.image ||
         null
       );
+      setPhotoChanged(false);
+      setPhotoAnalysis(foundReport.visualAttributes || null);
+      setPhotoAnalysisImage(null);
+      setPhotoReviewDecision(null);
 
 
     } catch (error) {
@@ -674,6 +691,13 @@ export default function EditReportPage() {
     setImage(
       imageUrl
     );
+    setPhotoChanged(false);
+    setPhotoAnalysis(null);
+    setPhotoAnalysisImage(null);
+    setPhotoAnalysisModel("");
+    setPhotoAnalysisError("");
+    setPhotoReviewIssue(null);
+    setPhotoReviewDecision(null);
 
 
     setCrop({
@@ -710,6 +734,13 @@ export default function EditReportPage() {
       setCroppedImage(
         finalImage
       );
+      setPhotoChanged(true);
+      setPhotoAnalysis(null);
+      setPhotoAnalysisImage(null);
+      setPhotoAnalysisModel("");
+      setPhotoAnalysisError("");
+      setPhotoReviewIssue(null);
+      setPhotoReviewDecision(null);
 
 
       setImage(null);
@@ -742,6 +773,7 @@ export default function EditReportPage() {
     setItem(
       newItem
     );
+    setPhotoReviewDecision(null);
 
 
     setBrand("");
@@ -751,12 +783,84 @@ export default function EditReportPage() {
     setFormError("");
   }
 
+  function chooseDetectedCategory() {
+    if (!photoAnalysis) return;
+    const category = canonicalItemCategory(photoAnalysis.itemType);
+    const option = category ? categoryOptionForForm(category, "found") : null;
+    if (!option) return;
+    setItem(option);
+    setPhotoReviewDecision({
+      image: croppedImage || "",
+      outcome: "corrected",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem: option,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function keepSelectedCategory() {
+    if (!photoAnalysis) return;
+    setPhotoReviewDecision({
+      image: croppedImage || "",
+      outcome: "kept",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem: item,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function selectPhotoCandidate(candidate: VisualCandidate) {
+    if (!photoAnalysis) return;
+    const category = canonicalItemCategory(candidate.itemType || candidate.label) || "other";
+    const option = categoryOptionForForm(category, "found") || "Other";
+    const selectedAnalysis: VisualAttributes = {
+      ...photoAnalysis,
+      itemType: candidate.itemType || candidate.label,
+      primaryColor: candidate.primaryColor || photoAnalysis.primaryColor,
+      brand: candidate.brand || null,
+      styleType: candidate.styleType || photoAnalysis.styleType,
+      mainObjectClear: true,
+      candidateItems: [],
+      confidence: { ...photoAnalysis.confidence, itemType: "high" },
+    };
+    setPhotoAnalysis(selectedAnalysis);
+    setItem(option);
+    setPhotoReviewDecision({
+      image: croppedImage || "",
+      outcome: "selected-object",
+      detectedItemType: selectedAnalysis.itemType,
+      selectedItem: option,
+      selectedObject: candidate.label,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function confirmSelectedObject() {
+    if (!photoAnalysis) return;
+    setPhotoAnalysis({ ...photoAnalysis, mainObjectClear: true, candidateItems: [] });
+    setPhotoReviewDecision({
+      image: croppedImage || "",
+      outcome: "manual-object-selection",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem: item,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
 
   /*
     UPDATE REPORT
   */
 
-  function updateReport() {
+  async function updateReport(skipPhotoAnalysis = false) {
 
     if (!report) {
       return;
@@ -780,59 +884,81 @@ export default function EditReportPage() {
       !item;
 
 
-    const missingBrand =
-      needsBrand(item) &&
-      !brand;
-
-
-    const missingType =
-      needsType(item) &&
-      !itemDetail;
-
-
-    const missingColor =
-      !color;
-
-
     const missingCampus =
       !campus;
-
-
-    const missingLocation =
-      !location;
-
-
-    const missingDate =
-      report.reportType === "found" && !incidentDate;
-
-
     const missingPhoto =
-      report.reportType === "found" && !croppedImage;
-
-
-    const missingDescription =
-      !description.trim();
+      !croppedImage;
 
 
     if (
       missingItem ||
-      missingBrand ||
-      missingType ||
-      missingColor ||
       missingCampus ||
-      missingLocation ||
-      missingDate ||
-      missingPhoto ||
-      missingDescription
+      missingPhoto
     ) {
 
       setFormError(
-        report.reportType === "found"
-          ? "Please complete the required fields, including the found date and photo, before updating your report."
-          : "Please complete the required fields before updating your report. A photo and date are optional for lost items."
+        "Please add an item, campus, and photo before updating your report."
       );
 
       return;
+    }
+
+    let visualAttributes = report.visualAttributes || null;
+    let photoReview = report.photoReview;
+    if (photoChanged && !skipPhotoAnalysis) {
+      const result = photoAnalysisImage === croppedImage && photoAnalysis
+        ? { ok: true as const, analysis: photoAnalysis, model: photoAnalysisModel }
+        : await analyzeReportPhoto(croppedImage, item, description);
+      if (!result.ok) {
+        setPhotoAnalysisError(result.error);
+        setPhotoReviewIssue(null);
+        return;
+      }
+      visualAttributes = result.analysis;
+      setPhotoAnalysis(visualAttributes);
+      setPhotoAnalysisImage(croppedImage);
+      setPhotoAnalysisModel(result.model);
+      setPhotoAnalysisError("");
+    }
+
+    if (skipPhotoAnalysis && photoChanged) {
+      visualAttributes = null;
+      photoReview = {
+        outcome: "analysis-unavailable-manual",
+        detectedItemType: null,
+        selectedItem: item,
+        confirmedAt: new Date().toISOString(),
+      };
+    } else if (visualAttributes) {
+      const stateDecision = photoReviewDecision?.image === croppedImage && photoReviewDecision.selectedItem === item
+        ? photoReviewDecision
+        : null;
+      const priorDecision = report.photoReview?.selectedItem === item ? report.photoReview : null;
+      const savedDecision = stateDecision || priorDecision;
+      if (!visualAttributes.mainObjectClear && savedDecision?.outcome !== "selected-object" && savedDecision?.outcome !== "manual-object-selection") {
+        setPhotoReviewIssue("ambiguous");
+        return;
+      }
+      const detectedCategory = canonicalItemCategory(visualAttributes.itemType);
+      const selectedCategory = canonicalItemCategory(item);
+      const acknowledgedMismatch = savedDecision && ["corrected", "kept", "selected-object"].includes(savedDecision.outcome);
+      if (detectedCategory && selectedCategory && detectedCategory !== selectedCategory && visualAttributes.confidence.itemType !== "low" && !acknowledgedMismatch) {
+        setPhotoReviewIssue("mismatch");
+        return;
+      }
+      photoReview = savedDecision ? {
+        outcome: savedDecision.outcome,
+        detectedItemType: savedDecision.detectedItemType,
+        selectedItem: savedDecision.selectedItem,
+        selectedObject: savedDecision.selectedObject,
+        confirmedAt: savedDecision.confirmedAt,
+      } : {
+        outcome: "matched",
+        detectedItemType: visualAttributes.itemType,
+        selectedItem: item,
+        confirmedAt: new Date().toISOString(),
+      };
+      setPhotoReviewIssue(null);
     }
 
 
@@ -896,6 +1022,10 @@ export default function EditReportPage() {
 
               image:
                 croppedImage || "",
+
+              visualAttributes,
+
+              photoReview,
 
               updatedAt:
                 new Date().toISOString(),
@@ -1172,12 +1302,13 @@ export default function EditReportPage() {
             <div className="formField">
 
               <label htmlFor="editItem">
-                Item
+                Item <span className="requiredMark" aria-hidden="true">*</span>
               </label>
 
 
               <select
                 id="editItem"
+                required
                 value={item}
                 onChange={(event) =>
                   changeItem(
@@ -1366,12 +1497,13 @@ export default function EditReportPage() {
             <div className="formField">
 
               <label htmlFor="editCampus">
-                Campus
+                Campus <span className="requiredMark" aria-hidden="true">*</span>
               </label>
 
 
               <select
                 id="editCampus"
+                required
                 value={campus}
                 onChange={(event) => {
 
@@ -1483,7 +1615,7 @@ export default function EditReportPage() {
 
                 {isLost
                   ? "Date Lost (Approximate)"
-                  : <>Date Found (Approximate) <span className="requiredMark" aria-hidden="true">*</span></>}
+                  : "Date Found (Approximate)"}
 
               </label>
 
@@ -1491,7 +1623,6 @@ export default function EditReportPage() {
               <input
                 id="editDate"
                 type="date"
-                required={!isLost}
                 value={
                   incidentDate
                 }
@@ -1514,7 +1645,7 @@ export default function EditReportPage() {
             <div className="formField photoField">
 
               <label>
-                Photo {isLost ? <span className="optionalLabel">(Optional)</span> : <span className="requiredMark" aria-hidden="true">*</span>}
+                Photo <span className="requiredMark" aria-hidden="true">*</span>
               </label>
 
 
@@ -1564,6 +1695,20 @@ export default function EditReportPage() {
               </label>
 
             </div>
+
+            <PhotoAnalysisPanel
+              analysis={photoAnalysis}
+              error={photoAnalysisError}
+              issue={photoReviewIssue}
+              selectedItem={item}
+              suggestedItem={photoAnalysis?.itemType ? categoryLabel(canonicalItemCategory(photoAnalysis.itemType) || photoAnalysis.itemType) : null}
+              onChangeCategory={chooseDetectedCategory}
+              onKeepCategory={keepSelectedCategory}
+              onSelectCandidate={selectPhotoCandidate}
+              onConfirmSelectedObject={confirmSelectedObject}
+              onRetry={() => void updateReport()}
+              onContinueWithoutAnalysis={() => void updateReport(true)}
+            />
 
 
             {/* DESCRIPTION */}
@@ -1623,9 +1768,7 @@ export default function EditReportPage() {
             <button
               type="button"
               className="submitReportButton"
-              onClick={
-                updateReport
-              }
+              onClick={() => void updateReport()}
             >
               Update
             </button>

@@ -1086,6 +1086,30 @@ a {
   color: #10069f;
 }
 
+.photoAnalysisPanel {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border: 2px solid #d8dcef;
+  border-left: 5px solid #10069f;
+  border-radius: 12px;
+  background: #f5f6fb;
+  color: #171747;
+  font-family: "Quicksand", sans-serif;
+}
+
+.photoAnalysisPanel strong { display: block; color: #10069f; font-size: 16px; }
+.photoAnalysisPanel p { margin: 6px 0 0; font-size: 14px; line-height: 1.45; }
+.photoAnalysisPanel .photoAnalysisDetails { color: #41445c; font-size: 13px; }
+.photoAnalysisWarning { border-color: #f0c44c; border-left-color: #d99c00; background: #fff9e3; }
+.photoAnalysisWarning strong { color: #7b5400; }
+.photoAnalysisError { border-color: #efc7c7; border-left-color: #c62828; background: #fff7f7; }
+.photoAnalysisError strong { color: #a51f1f; }
+.photoAnalysisActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.photoAnalysisActions button { padding: 8px 12px; border: 0; border-radius: 8px; background: #10069f; color: white; font: 700 13px "Quicksand", sans-serif; cursor: pointer; }
+.photoAnalysisActions button + button { background: #ffcc00; color: #10069f; }
+.photoAnalysisActions button:disabled { cursor: wait; opacity: 0.65; }
+.photoReviewNote { color: #70500a; font-size: 13px; line-height: 1.45; }
+
 /* ==================================================
    SEARCH ITEMS PAGE
    ================================================== */
@@ -3289,6 +3313,65 @@ button {
   transform: translateX(0);
 }
 
+.inboxMatchToast {
+  position: fixed;
+  right: 22px;
+  bottom: 24px;
+  z-index: 10000;
+  width: min(360px, calc(100vw - 32px));
+  min-height: 92px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 4px solid #10069f;
+  border-radius: 22px;
+  background: #ffcc00;
+  color: #10069f;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgb(16 6 159 / 22%);
+  animation: inboxToastSlideIn 0.4s ease both;
+}
+
+.inboxMatchToast .inboxMessageIconCircle {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.inboxMatchToast .inboxMessageIcon {
+  width: 30px;
+  height: 30px;
+}
+
+.inboxMatchToast .inboxMessageText {
+  min-width: 0;
+}
+
+.inboxMatchToast .inboxMessageText strong,
+.inboxMatchToast .inboxMessageText > span:last-child {
+  display: block;
+}
+
+.inboxMatchToast .inboxMessageText strong {
+  margin: 2px 0;
+  font-size: 15px;
+}
+
+.inboxMatchToast .inboxMessageText > span:last-child {
+  overflow: hidden;
+  color: #393070;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes inboxToastSlideIn {
+  from { opacity: 0; transform: translateX(110%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
 
 /* =========================================
    INBOX TAB
@@ -3431,6 +3514,17 @@ button {
   font-family: "Quicksand", sans-serif;
   font-size: 16px;
   font-weight: 600;
+}
+
+.inboxResolutionError {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #c62828;
+  border-radius: 10px;
+  background: #fff5f5;
+  color: #8f1717;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 
@@ -4508,5 +4602,426 @@ button {
 
   .inboxDrawer {
     width: 100vw;
+  }
+}
+
+/* Mobile refinements for report details, photo review, and the inbox. */
+@media (max-width: 760px) {
+  .reportDetailPage {
+    width: 100% !important;
+    max-width: 100%;
+    margin: 0 !important;
+    padding: 0;
+    transform: none;
+    overflow-wrap: anywhere;
+  }
+
+  .reportDetailPage > div:first-child {
+    margin: 0 0 18px !important;
+  }
+
+  .reportDetailPage h1 {
+    font-size: clamp(28px, 8vw, 36px) !important;
+  }
+
+  .reportDetailPage h2 {
+    font-size: clamp(19px, 5vw, 25px) !important;
+    line-height: 1.25;
+  }
+
+  .reportDetailCard {
+    padding: 16px !important;
+    border-radius: 18px !important;
+  }
+
+  .reportDetailTop {
+    flex-direction: column;
+    gap: 14px !important;
+  }
+
+  .reportDetailPhoto {
+    width: min(100%, 280px) !important;
+    min-width: 0 !important;
+    height: auto !important;
+    aspect-ratio: 1;
+    align-self: center;
+  }
+
+  .reportDetailSummary {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .reportDetailGrid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    column-gap: 0 !important;
+    row-gap: 16px !important;
+    overflow-wrap: anywhere;
+  }
+
+  .photoAnalysisPanel { padding: 12px; }
+
+  .photoAnalysisActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .photoAnalysisActions button {
+    min-height: 42px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .cropBackdrop {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+    box-sizing: border-box;
+  }
+
+  .cropOverlay {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    border-radius: 16px;
+  }
+
+  .cropButtons {
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 12px;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .cropButtons button {
+    min-width: 80px;
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .inboxMatchToast {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+    max-width: calc(100vw - 24px);
+    min-height: 76px;
+    padding: 10px;
+    gap: 9px;
+    border-width: 3px;
+    border-radius: 18px;
+  }
+
+  .inboxMatchToast .inboxMessageIconCircle {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .inboxMatchToast .inboxMessageIcon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .inboxMatchToast .inboxMessageText strong {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .inboxDrawer {
+    width: 100vw;
+    max-width: 500px;
+    right: 0;
+    align-items: center;
+    padding-right: env(safe-area-inset-right);
+    box-sizing: border-box;
+    transform: translateX(calc(100% - 72px));
+  }
+
+  .inboxDrawerOpen { transform: translateX(0); }
+
+  .inboxTab {
+    width: 72px;
+    min-width: 72px;
+    height: 138px;
+    padding: 4px;
+    border-width: 4px;
+    touch-action: none;
+  }
+
+  .inboxIconWrapper,
+  .inboxIcon {
+    width: 68px;
+    height: 68px;
+  }
+
+  .inboxIcon { transform: none; }
+  .inboxTabText { margin-top: 2px; font-size: 16px; }
+
+  .inboxPanel {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: min(460px, calc(100dvh - 24px));
+    max-height: calc(100dvh - 24px);
+    padding: 8px;
+    gap: 8px;
+    border-width: 4px;
+    border-radius: 22px 0 0 22px;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .inboxMessage {
+    min-height: 0;
+    padding: 10px;
+    gap: 8px;
+    border-radius: 18px;
+  }
+
+  .inboxMessageIconCircle {
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+  }
+
+  .inboxMessageIcon { width: 36px; height: 36px; }
+  .inboxMessageText { padding: 2px 0; }
+
+  .inboxMessageText h3 {
+    font-size: 15px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  .inboxMessageText p {
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .notificationNewLabel,
+  .notificationSeenLabel { font-size: 10px; }
+
+  .matchDecisionButtons { align-items: stretch; gap: 6px; }
+
+  .matchDecisionButtons button {
+    min-height: 38px;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .matchReceipt { padding: 14px; border-radius: 14px; }
+
+  .matchReceiptHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .matchReceipt p,
+  .matchReceipt ul { font-size: 13px; overflow-wrap: anywhere; }
+}
+
+@media (max-width: 420px) {
+  .inboxDrawer { transform: translateX(calc(100% - 64px)); }
+  .inboxDrawerOpen { transform: translateX(0); }
+  .inboxTab { width: 64px; min-width: 64px; }
+
+  .inboxIconWrapper,
+  .inboxIcon { width: 58px; height: 58px; }
+
+  .inboxPanel { padding: 6px; }
+  .inboxMessage { align-items: flex-start; gap: 7px; padding: 8px; }
+  .inboxMessageIconCircle { width: 40px; min-width: 40px; height: 40px; }
+  .inboxMessageIcon { width: 30px; height: 30px; }
+  .inboxMessageText h3 { font-size: 14px; }
+  .cropButtons button { min-width: 72px; padding-right: 12px; padding-left: 12px; }
+}
+
+/* Keep interactive hit areas stationary when hover styling activates. */
+.lostButton:hover,
+.foundButton:hover,
+.reportButton:hover,
+.sidebarButton:hover,
+.searchTab:hover,
+.homeLoginButton:hover,
+.clickableItemCard:hover,
+.viewReportButton:hover,
+.anotherReportButton:hover,
+.reportFilterButton:hover,
+.reportDetailsButton:hover,
+.reportSecondaryButton:hover,
+.matchConfirmButton:hover,
+.matchDeclineButton:hover,
+.inboxReportLink:hover {
+  transform: none !important;
+}
+
+.submitReportButton:hover,
+.submitReportButton:focus-visible {
+  transform: translateX(-30px) !important;
+}
+
+.heroBackground,
+.heroPhrase {
+  pointer-events: none;
+}
+
+.heroButtons {
+  position: relative;
+  z-index: 3;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #ffcc00;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .submitReportButton:hover,
+  .submitReportButton:focus-visible {
+    transform: none !important;
+  }
+}
+
+/* Keep page controls usable with narrow viewports and touch input. */
+@media (max-width: 760px) {
+  html,
+  body,
+  .page,
+  .dashboardPage {
+    min-width: 0;
+    min-height: 100%;
+  }
+
+  .dashboard,
+  .dashboardContent,
+  .searchPage,
+  .reportsPage,
+  .submittedPage,
+  .reportDetailPage,
+  .recentSection,
+  .fiuFooter {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .recentSection {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .recentHeader h2 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .itemsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .itemCard {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    border-radius: 18px;
+  }
+
+  .itemInfo {
+    padding: 10px 12px 14px;
+  }
+
+  .itemInfo h3,
+  .itemDetail {
+    overflow-wrap: anywhere;
+  }
+
+  .fiuFooterContent,
+  .fiuFooterLinkColumns,
+  .fiuFooterBottom {
+    min-width: 0;
+  }
+
+  .fiuFooter a,
+  .fiuFooter p {
+    overflow-wrap: anywhere;
+  }
+
+  .formField select,
+  .formField input:not(.hiddenPhotoInput),
+  .formField textarea,
+  .searchFilterPanel select {
+    font-size: 16px;
+  }
+
+  .photoUpload,
+  .cropButtons button,
+  .photoAnalysisActions button,
+  .matchDecisionButtons button,
+  .matchReceiptActions button,
+  .inboxReportLink,
+  .reportDetailsButton,
+  .reportSecondaryButton {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .sidebar {
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .inboxPanel {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 420px) {
+  .itemsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .itemCard {
+    max-width: 100%;
+  }
+
+  .recentHeader {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .recentHeader h2 {
+    flex: 1 1 100%;
+  }
+
+  .homeHeaderActions {
+    align-items: stretch;
+  }
+
+  .homeSearchBar {
+    flex: 1 1 0;
+  }
+
+  .searchFilterPanel {
+    padding: 12px;
+  }
+
+  .searchFilterPanel select,
+  .searchFilterPanel button {
+    width: 100%;
   }
 }

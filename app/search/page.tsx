@@ -13,6 +13,7 @@ import {
 
 import DashboardLayout from "../Components/DashboardLayout";
 import { REPORTS_UPDATED_EVENT } from "../lib/report-storage";
+import type { VisualAttributes } from "../lib/visual-attributes";
 
 
 type ItemFilter =
@@ -44,6 +45,7 @@ type SavedReport = {
 
   description?: string;
   campus?: string;
+  visualAttributes?: VisualAttributes | null;
 
   submittedAt: string;
   status?: string;
@@ -76,7 +78,30 @@ type SearchItem = {
 
   description?: string;
   campus?: string;
+  visualAttributes?: VisualAttributes | null;
 };
+
+const campusFilterOptions = [
+  "Modesto A. Maidique Campus (MMC)",
+  "Biscayne Bay Campus (BBC)",
+  "Engineering Center (EC)",
+  "FIU at I-75",
+  "FIU Downtown on Brickell",
+  "Other FIU Location",
+];
+
+function campusMatchesFilter(itemCampus = "", selectedCampus: string) {
+  if (itemCampus === selectedCampus) return true;
+  const aliases: Record<string, string[]> = {
+    "Modesto A. Maidique Campus (MMC)": ["MMC", "Modesto A. Maidique"],
+    "Biscayne Bay Campus (BBC)": ["BBC", "Biscayne Bay"],
+    "Engineering Center (EC)": ["EC", "Engineering Center"],
+    "FIU at I-75": ["I-75", "i75"],
+    "FIU Downtown on Brickell": ["Brickell"],
+    "Other FIU Location": ["Other FIU Location", "Other"],
+  };
+  return (aliases[selectedCampus] || []).some((alias) => itemCampus.toLowerCase().includes(alias.toLowerCase()));
+}
 
 
 /*
@@ -247,11 +272,11 @@ function SearchPageContent() {
 
     const parts = [
 
-      report.color,
+      report.color || report.visualAttributes?.primaryColor,
 
-      report.brand,
+      report.brand || report.visualAttributes?.brand,
 
-      report.itemDetail,
+      report.itemDetail || report.visualAttributes?.styleType,
 
       report.item,
 
@@ -386,7 +411,10 @@ function SearchPageContent() {
               report.brand,
 
             itemDetail:
-              report.itemDetail,
+              report.itemDetail || report.visualAttributes?.styleType || undefined,
+
+            visualAttributes:
+              report.visualAttributes,
 
             description:
               report.description,
@@ -512,6 +540,14 @@ function SearchPageContent() {
 
           item.brand,
 
+          item.visualAttributes?.brand,
+
+          item.visualAttributes?.primaryColor,
+
+          item.visualAttributes?.styleType,
+
+          item.visualAttributes?.distinctiveFeatures?.join(" "),
+
           item.itemDetail,
 
           item.description,
@@ -530,7 +566,7 @@ function SearchPageContent() {
             searchText
           );
 
-        const matchesCampus = !campusFilter || item.campus === campusFilter;
+        const matchesCampus = !campusFilter || campusMatchesFilter(item.campus, campusFilter);
 
 
         return (
@@ -646,7 +682,7 @@ function SearchPageContent() {
             <label htmlFor="campusFilter">Campus</label>
             <select id="campusFilter" value={campusFilter} onChange={(event) => setCampusFilter(event.target.value)}>
               <option value="">All campuses</option>
-              {Array.from(new Set(items.map((item) => item.campus).filter((campus): campus is string => Boolean(campus)))).sort().map((campus) => (
+              {campusFilterOptions.map((campus) => (
                 <option key={campus} value={campus}>{campus}</option>
               ))}
             </select>

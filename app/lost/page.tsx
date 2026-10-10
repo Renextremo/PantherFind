@@ -7,6 +7,16 @@ import DashboardLayout from "../Components/DashboardLayout";
 import { generateReportDescription } from "../lib/report-description";
 import { runReportAgents } from "../lib/report-agents";
 import { saveReportsWithQuotaFallback } from "../lib/report-storage";
+import {
+  analyzeReportPhoto,
+  canonicalItemCategory,
+  categoryLabel,
+  categoryOptionForForm,
+  PhotoReviewDecision,
+  VisualAttributes,
+  VisualCandidate,
+} from "../lib/visual-attributes";
+import PhotoAnalysisPanel from "../Components/PhotoAnalysisPanel";
 
 type CropArea = {
   x: number;
@@ -46,6 +56,12 @@ export default function LostPage() {
   const [location, setLocation] = useState("");
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [photoAnalysis, setPhotoAnalysis] = useState<VisualAttributes | null>(null);
+  const [photoAnalysisImage, setPhotoAnalysisImage] = useState<string | null>(null);
+  const [photoAnalysisModel, setPhotoAnalysisModel] = useState("");
+  const [photoAnalysisError, setPhotoAnalysisError] = useState("");
+  const [photoReviewIssue, setPhotoReviewIssue] = useState<"mismatch" | "ambiguous" | null>(null);
+  const [photoReviewDecision, setPhotoReviewDecision] = useState<(PhotoReviewDecision & { image: string }) | null>(null);
 
   const [image, setImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] =
@@ -117,6 +133,12 @@ export default function LostPage() {
       setCroppedImage(
         finishedImage
       );
+      setPhotoAnalysis(null);
+      setPhotoAnalysisImage(null);
+      setPhotoAnalysisModel("");
+      setPhotoAnalysisError("");
+      setPhotoReviewIssue(null);
+      setPhotoReviewDecision(null);
 
       setImage(null);
       setZoom(1);
@@ -140,7 +162,83 @@ export default function LostPage() {
     setCroppedArea(null);
   };
 
-  async function submitReport() {
+  function chooseDetectedCategory() {
+    if (!photoAnalysis || !croppedImage) return;
+    const category = canonicalItemCategory(photoAnalysis.itemType);
+    if (!category) return;
+    const option = categoryOptionForForm(category, "lost");
+    if (!option) return;
+    setItemType(option);
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "corrected",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem: itemNames[option] || option,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function keepSelectedCategory() {
+    if (!photoAnalysis || !croppedImage) return;
+    const selectedItem = itemNames[itemType] || itemType;
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "kept",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function selectPhotoCandidate(candidate: VisualCandidate) {
+    if (!photoAnalysis || !croppedImage) return;
+    const category = canonicalItemCategory(candidate.itemType || candidate.label) || "other";
+    const option = categoryOptionForForm(category, "lost") || "other";
+    const selectedItem = itemNames[option] || option;
+    const selectedAnalysis: VisualAttributes = {
+      ...photoAnalysis,
+      itemType: candidate.itemType || candidate.label,
+      primaryColor: candidate.primaryColor || photoAnalysis.primaryColor,
+      brand: candidate.brand || null,
+      styleType: candidate.styleType || photoAnalysis.styleType,
+      mainObjectClear: true,
+      candidateItems: [],
+      confidence: { ...photoAnalysis.confidence, itemType: "high" },
+    };
+    setPhotoAnalysis(selectedAnalysis);
+    setItemType(option);
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "selected-object",
+      detectedItemType: selectedAnalysis.itemType,
+      selectedItem,
+      selectedObject: candidate.label,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  function confirmSelectedObject() {
+    if (!photoAnalysis || !croppedImage) return;
+    const selectedItem = itemNames[itemType] || itemType;
+    setPhotoAnalysis({ ...photoAnalysis, mainObjectClear: true, candidateItems: [] });
+    setPhotoReviewDecision({
+      image: croppedImage,
+      outcome: "manual-object-selection",
+      detectedItemType: photoAnalysis.itemType,
+      selectedItem,
+      confirmedAt: new Date().toISOString(),
+    });
+    setPhotoReviewIssue(null);
+    setFormError("");
+  }
+
+  async function submitReport(skipPhotoAnalysis = false) {
   const brandElement =
     document.getElementById(
       "brand"
@@ -176,13 +274,79 @@ export default function LostPage() {
       ? otherLocationElement?.value.trim() || ""
       : location;
 
-  if (!itemType || !campus || !selectedLocation) {
-    setFormError("Please add an item, campus, and location to submit your report. A photo is optional for lost items.");
+  if (!itemType || !colorElement?.value || !campus) {
+    setFormError("Please select an item, color, and campus to submit your report.");
     return;
   }
 
   setFormError("");
   setIsSubmitting(true);
+
+  const itemName = itemNames[itemType] || itemType || "Item";
+  const brand = brandElement?.value ? brandElement.selectedOptions[0]?.text || "" : "";
+  const itemDetail = typeElement?.value ? typeElement.selectedOptions[0]?.text || "" : "";
+  const color = colorElement?.value ? colorElement.selectedOptions[0]?.text || "" : "";
+  const campusName = campusNames[campus] || campus || "FIU Campus";
+  const enteredDescription = descriptionElement?.value.trim() || "";
+  let visualAttributes: VisualAttributes | null = null;
+  let photoReview: PhotoReviewDecision | null = null;
+
+  if (!croppedImage) {
+    visualAttributes = null;
+    photoReview = null;
+  } else if (skipPhotoAnalysis) {
+    photoReview = {
+      outcome: "analysis-unavailable-manual",
+      detectedItemType: null,
+      selectedItem: itemName,
+      confirmedAt: new Date().toISOString(),
+    };
+  } else {
+    const analysisResult = photoAnalysisImage === croppedImage && photoAnalysis
+      ? { ok: true as const, analysis: photoAnalysis, model: photoAnalysisModel }
+      : await analyzeReportPhoto(croppedImage, itemName, enteredDescription);
+    if (!analysisResult.ok) {
+      setPhotoAnalysisError(analysisResult.error);
+      setPhotoReviewIssue(null);
+      setIsSubmitting(false);
+      return;
+    }
+    visualAttributes = analysisResult.analysis;
+    setPhotoAnalysis(visualAttributes);
+    setPhotoAnalysisImage(croppedImage);
+    setPhotoAnalysisModel(analysisResult.model);
+    setPhotoAnalysisError("");
+
+    const savedDecision = photoReviewDecision?.image === croppedImage && photoReviewDecision.selectedItem === itemName
+      ? photoReviewDecision
+      : null;
+    if (!visualAttributes.mainObjectClear && savedDecision?.outcome !== "selected-object" && savedDecision?.outcome !== "manual-object-selection") {
+      setPhotoReviewIssue("ambiguous");
+      setIsSubmitting(false);
+      return;
+    }
+    const detectedCategory = canonicalItemCategory(visualAttributes.itemType);
+    const selectedCategory = canonicalItemCategory(itemName);
+    const acknowledgedMismatch = savedDecision && ["corrected", "kept", "selected-object"].includes(savedDecision.outcome);
+    if (detectedCategory && selectedCategory && detectedCategory !== selectedCategory && visualAttributes.confidence.itemType !== "low" && !acknowledgedMismatch) {
+      setPhotoReviewIssue("mismatch");
+      setIsSubmitting(false);
+      return;
+    }
+    photoReview = savedDecision ? {
+      outcome: savedDecision.outcome,
+      detectedItemType: savedDecision.detectedItemType,
+      selectedItem: savedDecision.selectedItem,
+      selectedObject: savedDecision.selectedObject,
+      confirmedAt: savedDecision.confirmedAt,
+    } : {
+      outcome: "matched",
+      detectedItemType: visualAttributes.itemType,
+      selectedItem: itemName,
+      confirmedAt: new Date().toISOString(),
+    };
+    setPhotoReviewIssue(null);
+  }
 
 
   /* ------------------------------------------
@@ -253,12 +417,10 @@ export default function LostPage() {
      CREATE REPORT
      ------------------------------------------ */
 
-  const itemName = itemNames[itemType] || itemType || "Item";
-  const brand = brandElement?.value ? brandElement.selectedOptions[0]?.text || "" : "";
-  const itemDetail = typeElement?.value ? typeElement.selectedOptions[0]?.text || "" : "";
-  const color = colorElement?.value ? colorElement.selectedOptions[0]?.text || "" : "";
-  const campusName = campusNames[campus] || campus || "FIU Campus";
-  const description = descriptionElement?.value.trim() || await generateReportDescription({
+  const manualDescription = [color, brand, itemDetail, itemName].filter(Boolean).join(" ");
+  const description = enteredDescription || (!croppedImage || skipPhotoAnalysis || photoReview?.outcome === "kept"
+    ? `${manualDescription} lost${selectedLocation ? ` near ${selectedLocation}` : ""} at ${campusName}.`
+    : await generateReportDescription({
     reportType: "lost",
     item: itemName,
     brand,
@@ -267,7 +429,8 @@ export default function LostPage() {
     campus: campusName,
     location: selectedLocation,
     image: croppedImage || "",
-  });
+    visualAttributes,
+  }));
 
   const report = {
     id:
@@ -300,6 +463,10 @@ export default function LostPage() {
       "",
 
     description,
+
+    visualAttributes,
+
+    photoReview,
 
     image:
       croppedImage || "",
@@ -391,12 +558,15 @@ export default function LostPage() {
 
             <select
               id="item"
+              required
               value={itemType}
-              onChange={(event) =>
+              onChange={(event) => {
                 setItemType(
                   event.target.value
-                )
-              }
+                );
+                setPhotoReviewDecision(null);
+                setPhotoReviewIssue(null);
+              }}
             >
               <option value="">
                 Select Item
@@ -759,10 +929,10 @@ export default function LostPage() {
           <div className="formField">
 
             <label htmlFor="color">
-              Color
+              Color <span className="requiredMark" aria-hidden="true">*</span>
             </label>
 
-            <select id="color">
+            <select id="color" required onChange={() => setFormError("")}>
 
               <option value="">
                 Select Color
@@ -839,6 +1009,7 @@ export default function LostPage() {
 
             <select
               id="campus"
+              required
               value={campus}
               onChange={(event) => {
                 setCampus(
@@ -889,7 +1060,7 @@ export default function LostPage() {
             <div className="formField">
 
               <label htmlFor="mmcLocation">
-                Location <span className="requiredMark" aria-hidden="true">*</span>
+                Location
               </label>
 
               <select
@@ -971,7 +1142,7 @@ export default function LostPage() {
             <div className="formField">
 
               <label htmlFor="bbcLocation">
-                Location <span className="requiredMark" aria-hidden="true">*</span>
+                Location
               </label>
 
               <select
@@ -1038,7 +1209,7 @@ export default function LostPage() {
             <div className="formField">
 
               <label htmlFor="ecLocation">
-                Location <span className="requiredMark" aria-hidden="true">*</span>
+                Location
               </label>
 
               <select
@@ -1092,7 +1263,7 @@ export default function LostPage() {
             <div className="formField">
 
               <label htmlFor="i75Location">
-                Location <span className="requiredMark" aria-hidden="true">*</span>
+                Location
               </label>
 
               <select
@@ -1146,7 +1317,7 @@ export default function LostPage() {
             <div className="formField">
 
               <label htmlFor="brickellLocation">
-                Location <span className="requiredMark" aria-hidden="true">*</span>
+                Location
               </label>
 
               <select
@@ -1200,7 +1371,7 @@ export default function LostPage() {
             <div className="formField">
 
               <label htmlFor="otherLocation">
-                Location <span className="requiredMark" aria-hidden="true">*</span>
+                Location
               </label>
 
               <input
@@ -1234,7 +1405,7 @@ export default function LostPage() {
           <div className="formField photoField">
 
             <label>
-              Photo <span className="optionalLabel">(Optional)</span>
+              Photo <span className="optionalLabel">(optional)</span>
             </label>
 
             <label className="photoUpload">
@@ -1272,6 +1443,13 @@ export default function LostPage() {
                     event.target.files?.[0];
 
                   if (file) {
+                    setCroppedImage(null);
+                    setPhotoAnalysis(null);
+                    setPhotoAnalysisImage(null);
+                    setPhotoAnalysisModel("");
+                    setPhotoAnalysisError("");
+                    setPhotoReviewIssue(null);
+                    setPhotoReviewDecision(null);
                     setImage(
                       URL.createObjectURL(
                         file
@@ -1288,6 +1466,21 @@ export default function LostPage() {
 
           </div>
 
+          <PhotoAnalysisPanel
+            analysis={photoAnalysis}
+            error={photoAnalysisError}
+            issue={photoReviewIssue}
+            selectedItem={itemNames[itemType] || itemType}
+            suggestedItem={photoAnalysis?.itemType ? categoryLabel(canonicalItemCategory(photoAnalysis.itemType) || photoAnalysis.itemType) : null}
+            isBusy={isSubmitting}
+            onChangeCategory={chooseDetectedCategory}
+            onKeepCategory={keepSelectedCategory}
+            onSelectCandidate={selectPhotoCandidate}
+            onConfirmSelectedObject={confirmSelectedObject}
+            onRetry={() => void submitReport()}
+            onContinueWithoutAnalysis={() => void submitReport(true)}
+          />
+
 
           {/* DESCRIPTION */}
 
@@ -1300,7 +1493,7 @@ export default function LostPage() {
             <textarea
               id="description"
               className="descriptionField"
-              placeholder="Optional. Add details, or leave blank and AI will draft a description from the item details and location (plus the photo, if provided)."
+              placeholder="Optional. Add details, or leave blank and AI will draft a description from the item details and photo."
             />
 
           </div>
@@ -1315,10 +1508,10 @@ export default function LostPage() {
           <button
             type="button"
             className="submitReportButton"
-            onClick={submitReport}
+            onClick={() => void submitReport()}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "AI reviewing report…" : "Submit Report"}
+              {isSubmitting ? "Reviewing report…" : "Submit Report"}
           </button>
 
         </div>
@@ -1338,7 +1531,7 @@ export default function LostPage() {
               image={image}
               crop={crop}
               zoom={zoom}
-              aspect={350 / 200}
+              aspect={1}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={(

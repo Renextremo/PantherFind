@@ -7,7 +7,7 @@ export type InboxNotification = {
   matchedReportId: string;
   createdAt: string;
   status?: "pending" | "confirmed" | "declined";
-  confidence?: number;
+  matchLevel?: "Strong Match" | "Possible Match" | "Weak Match";
   rationale?: string;
   resolvedAt?: string;
   seen?: boolean;

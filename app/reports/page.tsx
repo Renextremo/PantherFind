@@ -13,6 +13,7 @@ import DashboardLayout from "../Components/DashboardLayout";
 import { notifyReportsUpdated, REPORTS_UPDATED_EVENT } from "../lib/report-storage";
 import { FIU_LOST_FOUND_URL, getPickupContacts } from "../lib/pickup-guidance";
 import { INBOX_STORAGE_KEY, InboxNotification, saveInboxNotifications } from "../lib/inbox";
+import type { VisualAttributes, PhotoReviewDecision } from "../lib/visual-attributes";
 
 
 type FilterType =
@@ -35,6 +36,8 @@ type Report = {
   itemDetail?: string;
 
   color?: string;
+  visualAttributes?: VisualAttributes | null;
+  photoReview?: PhotoReviewDecision;
 
   campus?: string;
 
@@ -327,6 +330,7 @@ export default function ReportsPage() {
   }
 
   function getReceipt(report: Report) {
+    if (report.status !== "Match Found") return null;
     if (report.matchReceipt) return report.matchReceipt;
     if (!report.matchedReportId) return null;
     const match = reports.find((entry) => entry.id === report.matchedReportId);
@@ -601,6 +605,17 @@ export default function ReportsPage() {
                     {report.item}
                   </h3>
 
+                  {(report.visualAttributes?.primaryColor || report.visualAttributes?.brand || report.visualAttributes?.styleType) && (
+                    <p>
+                      {[report.visualAttributes?.primaryColor, report.visualAttributes?.brand, report.visualAttributes?.styleType].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
+                  {report.photoReview?.outcome === "kept" && report.photoReview.detectedItemType && (
+                    <p className="photoReviewNote">
+                      Photo analysis suggested {report.photoReview.detectedItemType}; you confirmed {report.photoReview.selectedItem}.
+                    </p>
+                  )}
+
 
                   <p>
 
@@ -761,7 +776,7 @@ export default function ReportsPage() {
 
                 </div>
 
-                {(report.matchReceipt || report.matchedReportId) && (() => {
+                {report.status === "Match Found" && (report.matchReceipt || report.matchedReportId) && (() => {
                   const receipt = getReceipt(report);
                   if (!receipt) return null;
                   const contacts = getPickupContacts(receipt.campus, receipt.location);

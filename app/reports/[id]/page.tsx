@@ -15,6 +15,7 @@ import { REPORTS_UPDATED_EVENT } from "../../lib/report-storage";
 import { FIU_LOST_FOUND_URL, getPickupContacts } from "../../lib/pickup-guidance";
 import { INBOX_STORAGE_KEY, INBOX_UPDATED_EVENT, InboxNotification, saveInboxNotifications } from "../../lib/inbox";
 import { notifyReportsUpdated } from "../../lib/report-storage";
+import type { VisualAttributes, PhotoReviewDecision } from "../../lib/visual-attributes";
 
 
 type Report = {
@@ -31,6 +32,8 @@ type Report = {
   itemDetail?: string;
 
   color?: string;
+  visualAttributes?: VisualAttributes | null;
+  photoReview?: PhotoReviewDecision;
 
   campus?: string;
 
@@ -316,6 +319,7 @@ export default function ReportDetailsPage() {
   ] = useState(true);
 
   const [matchNotifications, setMatchNotifications] = useState<InboxNotification[]>([]);
+  const [resolutionError, setResolutionError] = useState("");
 
 
   /*
@@ -404,7 +408,7 @@ export default function ReportDetailsPage() {
         const foundItem = foundReport.reportType === "found"
           ? foundReport
           : matchedReport?.reportType === "found" ? matchedReport : null;
-        const reportWithReceipt = foundReport.matchReceipt || !foundItem
+        const reportWithReceipt = foundReport.matchReceipt || foundReport.status !== "Match Found" || !foundItem
           ? foundReport
           : {
               ...foundReport,
@@ -472,6 +476,40 @@ export default function ReportDetailsPage() {
   function resolveMatchFromDetails(notification: InboxNotification, status: "confirmed" | "declined") {
     const resolvedAt = new Date().toISOString();
     const resolvedNotification = { ...notification, status, resolvedAt, seen: true };
+    if (status === "confirmed") {
+      try {
+        const reports = JSON.parse(localStorage.getItem("pantherFindReports") || "[]") as Report[];
+        const reportIds = new Set([notification.reportId, notification.matchedReportId]);
+        const pair = reports.filter((item) => reportIds.has(item.id));
+        const foundReport = pair.find((item) => item.reportType === "found");
+        if (pair.length !== 2 || !foundReport) {
+          setResolutionError("We couldn’t verify both reports in this match, so it hasn’t been confirmed.");
+          return;
+        }
+        const receipt = {
+          confirmedAt: resolvedAt,
+          foundReportId: foundReport.id,
+          campus: foundReport.campus,
+          location: foundReport.location,
+          caseNumber: foundReport.caseNumber,
+        };
+        const updatedReports = reports.map((item) => reportIds.has(item.id)
+          ? {
+              ...item,
+              status: "Match Found" as const,
+              matchedReportId: item.id === notification.reportId ? notification.matchedReportId : notification.reportId,
+              matchConfirmedAt: resolvedAt,
+              matchReceipt: receipt,
+            }
+          : item);
+        localStorage.setItem("pantherFindReports", JSON.stringify(updatedReports));
+        notifyReportsUpdated();
+      } catch {
+        setResolutionError("The match could not be saved. Please check browser storage and retry.");
+        return;
+      }
+    }
+
     let allNotifications: InboxNotification[] = [];
     try {
       const parsed = JSON.parse(localStorage.getItem(INBOX_STORAGE_KEY) || "[]");
@@ -486,34 +524,7 @@ export default function ReportDetailsPage() {
     setMatchNotifications(updatedNotifications.filter((item) =>
       [item.reportId, item.matchedReportId].includes(params.id as string)
     ));
-
-    if (status !== "confirmed") return;
-    try {
-      const reports: Report[] = JSON.parse(localStorage.getItem("pantherFindReports") || "[]");
-      const reportIds = new Set([notification.reportId, notification.matchedReportId]);
-      const foundReport = reports.find((item) => reportIds.has(item.id) && item.reportType === "found");
-      if (!foundReport) return;
-      const receipt = {
-        confirmedAt: resolvedAt,
-        foundReportId: foundReport.id,
-        campus: foundReport.campus,
-        location: foundReport.location,
-        caseNumber: foundReport.caseNumber,
-      };
-      const updatedReports = reports.map((item) => reportIds.has(item.id)
-        ? {
-            ...item,
-            status: "Match Found" as const,
-            matchedReportId: item.id === notification.reportId ? notification.matchedReportId : notification.reportId,
-            matchConfirmedAt: resolvedAt,
-            matchReceipt: receipt,
-          }
-        : item);
-      localStorage.setItem("pantherFindReports", JSON.stringify(updatedReports));
-      notifyReportsUpdated();
-    } catch {
-      // Keep report details usable if saved browser data is unavailable.
-    }
+    setResolutionError("");
   }
 
 
@@ -710,6 +721,7 @@ export default function ReportDetailsPage() {
     <DashboardLayout activePage="reports">
 
       <div
+        className="reportDetailPage"
         style={{
           width:
             "calc(100% - 55px)",
@@ -729,6 +741,7 @@ export default function ReportDetailsPage() {
         {/* HEADING */}
 
         <div
+          className="reportDetailCard"
           style={{
             marginBottom:
               "25px",
@@ -768,7 +781,7 @@ export default function ReportDetailsPage() {
                 600,
             }}
           >
-            {report.matchReceipt ? "Match confirmed · pickup receipt" : "View your submitted report"}
+            {report.status === "Match Found" && report.matchReceipt ? "Match confirmed · pickup receipt" : "View your submitted report"}
           </h2>
 
         </div>
@@ -790,6 +803,7 @@ export default function ReportDetailsPage() {
             </div>
           </section>
         ))}
+        {resolutionError && <p className="formError" role="alert">{resolutionError}</p>}
 
 
         {/* MAIN REPORT CARD */}
@@ -817,6 +831,7 @@ export default function ReportDetailsPage() {
           {/* TOP SECTION */}
 
           <div
+            className="reportDetailTop"
             style={{
               display:
                 "flex",
@@ -833,6 +848,7 @@ export default function ReportDetailsPage() {
             {/* PHOTO */}
 
             <div
+              className="reportDetailPhoto"
               style={{
                 width:
                   "260px",
@@ -914,6 +930,7 @@ export default function ReportDetailsPage() {
             {/* BASIC INFORMATION */}
 
             <div
+              className="reportDetailSummary"
               style={{
                 flex: 1,
               }}
@@ -1069,7 +1086,7 @@ export default function ReportDetailsPage() {
           </div>
 
 
-          {report.matchReceipt && (() => {
+          {report.status === "Match Found" && report.matchReceipt && (() => {
             const receipt = report.matchReceipt;
             const contacts = getPickupContacts(receipt.campus, receipt.location);
             return (
@@ -1094,6 +1111,7 @@ export default function ReportDetailsPage() {
           {/* DIVIDER */}
 
           <div
+            className="reportDetailGrid"
             style={{
               width:
                 "100%",
@@ -1144,8 +1162,7 @@ export default function ReportDetailsPage() {
                     "5px 0 0",
                 }}
               >
-                {report.brand ||
-                  "Not applicable"}
+                {report.brand || report.visualAttributes?.brand || (report.visualAttributes ? "Unknown" : "Not provided")}
               </p>
 
             </div>
@@ -1166,8 +1183,7 @@ export default function ReportDetailsPage() {
                     "5px 0 0",
                 }}
               >
-                {report.itemDetail ||
-                  "Not applicable"}
+                {report.itemDetail || report.visualAttributes?.styleType || (report.visualAttributes ? "Unknown" : "Not provided")}
               </p>
 
             </div>
@@ -1188,8 +1204,7 @@ export default function ReportDetailsPage() {
                     "5px 0 0",
                 }}
               >
-                {report.color ||
-                  "Not provided"}
+                {report.color || report.visualAttributes?.primaryColor || (report.visualAttributes ? "Unknown" : "Not provided")}
               </p>
 
             </div>
@@ -1238,6 +1253,23 @@ export default function ReportDetailsPage() {
 
             </div>
 
+            {report.visualAttributes && (
+              <>
+                <div>
+                  <strong>Visible features</strong>
+                  <p style={{ margin: "5px 0 0" }}>
+                    {[report.visualAttributes.model && `Model ${report.visualAttributes.model}`, report.visualAttributes.shape, ...report.visualAttributes.physicalCharacteristics, ...report.visualAttributes.distinctiveFeatures].filter(Boolean).join(" · ") || "Unknown"}
+                  </p>
+                </div>
+                <div>
+                  <strong>Photo surroundings</strong>
+                  <p style={{ margin: "5px 0 0" }}>
+                    {report.visualAttributes.surroundings.join(" · ") || "Unknown"}
+                  </p>
+                </div>
+              </>
+            )}
+
 
             {/* INCIDENT DATE */}
 
@@ -1272,6 +1304,12 @@ export default function ReportDetailsPage() {
 
 
           {/* DESCRIPTION */}
+
+          {report.photoReview?.outcome === "kept" && report.photoReview.detectedItemType && (
+            <p className="photoReviewNote" role="note">
+              Photo analysis suggested {report.photoReview.detectedItemType}; you confirmed {report.photoReview.selectedItem}. The item category remains your selection.
+            </p>
+          )}
 
           <div
             style={{

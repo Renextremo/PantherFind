@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { geminiErrorResponse, generateGeminiContent } from "../../lib/gemini-api";
 
 export const runtime = "nodejs";
 
@@ -11,14 +12,39 @@ type DescriptionRequest = {
   campus?: string;
   location?: string;
   image?: string;
+  visualAttributes?: {
+    itemType?: string | null;
+    primaryColor?: string | null;
+    secondaryColors?: string[];
+    brand?: string | null;
+    model?: string | null;
+    shape?: string | null;
+    physicalCharacteristics?: string[];
+    distinctiveFeatures?: string[];
+    surroundings?: string[];
+  } | null;
 };
 
-export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
+function visualSummary(attributes: DescriptionRequest["visualAttributes"]) {
+  if (!attributes) return "No structured photo analysis is available.";
+  const strings = (values?: string[]) => Array.isArray(values) ? values.filter((value) => typeof value === "string").slice(0, 5) : [];
+  return JSON.stringify({
+    itemType: attributes.itemType?.slice(0, 100) || null,
+    primaryColor: attributes.primaryColor?.slice(0, 100) || null,
+    secondaryColors: strings(attributes.secondaryColors),
+    brand: attributes.brand?.slice(0, 100) || null,
+    model: attributes.model?.slice(0, 100) || null,
+    shape: attributes.shape?.slice(0, 160) || null,
+    physicalCharacteristics: strings(attributes.physicalCharacteristics),
+    distinctiveFeatures: strings(attributes.distinctiveFeatures),
+    surroundings: strings(attributes.surroundings),
+  });
+}
 
-  if (!apiKey) {
+export async function POST(request: Request) {
+  if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
-      { error: "AI description is not configured." },
+      { error: "Gemini description generation is not configured. Add GEMINI_API_KEY to the server environment." },
       { status: 503 }
     );
   }
@@ -33,11 +59,10 @@ export async function POST(request: Request) {
   if (
     !body.item?.trim() ||
     !body.campus?.trim() ||
-    !body.location?.trim() ||
     !body.image?.startsWith("data:image/")
   ) {
     return NextResponse.json(
-      { error: "Item, photo, campus, and location are required." },
+      { error: "Item, photo, and campus are required." },
       { status: 400 }
     );
   }
@@ -49,56 +74,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const details = [body.color, body.brand, body.itemDetail]
-    .filter(Boolean)
-    .join(" ");
+  const imageParts = body.image.match(/^data:(image\/(?:jpeg|jpg|png|webp));base64,([a-z\d+/]+=*)$/i);
+  if (!imageParts) return NextResponse.json({ error: "A supported photo is required." }, { status: 400 });
+
   const reportType = body.reportType === "found" ? "found" : "lost";
-  const itemDetails = [details, body.item].filter(Boolean).join(" ");
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-6-luna",
-        store: false,
-        max_output_tokens: 120,
-        instructions:
-          "Write a short, factual lost-and-found listing description in 1-2 sentences. Use the image only for visible item traits. Do not guess a brand, exact model, or details that cannot be seen. Include the provided item and campus location naturally. Do not say the item is currently at that location; say it was lost or found there according to the report type.",
-        input: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: `Report type: ${reportType}. Item: ${itemDetails}. Campus: ${body.campus}. Location: ${body.location}. Describe this item for the report without inventing details.`,
-              },
-              { type: "input_image", image_url: body.image, detail: "low" },
-            ],
-          },
-        ],
-      }),
+    const description = await generateGeminiContent({
+      maxOutputTokens: 220,
+      temperature: 0.2,
+      parts: [
+        { text: `Inspect the image yourself and write a concise, factual description of the pictured item in 1-2 sentences. Use the structured visual analysis as supporting evidence, but when it is missing or conflicts with clearly visible image evidence, describe what is actually pictured. If the photo shows a different object from the student's selected item (for example, headphones instead of a phone), do not put the incorrect selected label in the description. Do not alter the student's saved report fields. Mention the visible item's type and primary color when recognizable; mention brand/model only when a logo, text, or identifying feature clearly supports it. Add distinctive visible features when useful. Include the student's reported campus and location when provided, but never claim the photo proves where it was taken. A place visible in the photo may be mentioned only when directly identified by readable signage or an unmistakable landmark; do not infer an exact location from generic surroundings. Do not invent details.\n\nReport type: ${reportType}. Student-selected item: ${body.item}. Student-entered item details: ${[body.itemDetail, body.color, body.brand].filter(Boolean).join(", ") || "none"}. Structured visual analysis: ${visualSummary(body.visualAttributes)}. Reported campus: ${body.campus}. Reported location: ${body.location?.trim() || "not provided"}. Make the description match the pictured object, while preserving the report fields outside this generated description.` },
+        { inlineData: { mimeType: imageParts[1], data: imageParts[2] } },
+      ],
     });
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "AI description could not be generated." },
-        { status: 502 }
-      );
-    }
-
-    const result = await response.json();
-    const description = (result.output || [])
-      .flatMap((output: { content?: Array<{ type?: string; text?: string }> }) =>
-        output.content || []
-      )
-      .filter((content: { type?: string }) => content.type === "output_text")
-      .map((content: { text?: string }) => content.text || "")
-      .join(" ")
-      .trim();
 
     if (!description) {
       return NextResponse.json(
@@ -108,10 +97,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ description });
-  } catch {
-    return NextResponse.json(
-      { error: "AI description could not be generated." },
-      { status: 502 }
-    );
+  } catch (error) {
+    const failure = geminiErrorResponse(error, "Gemini description could not be generated.");
+    return NextResponse.json({ error: failure.error, retryAfterSeconds: failure.retryAfterSeconds }, { status: failure.status });
   }
 }

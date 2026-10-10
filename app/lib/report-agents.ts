@@ -3,6 +3,7 @@ import {
   InboxNotification,
   saveInboxNotifications,
 } from "./inbox";
+import type { VisualAttributes } from "./visual-attributes";
 
 type ReportRecord = {
   id: string;
@@ -12,6 +13,8 @@ type ReportRecord = {
   brand?: string;
   itemDetail?: string;
   color?: string;
+  visualAttributes?: VisualAttributes | null;
+  photoReview?: { outcome?: string; selectedItem?: string } | null;
   campus?: string;
   location?: string;
   incidentDate?: string;
@@ -22,7 +25,7 @@ type ReportRecord = {
 
 type MatchResult = {
   reportId: string;
-  confidence: number;
+  matchLevel: "Strong Match" | "Possible Match" | "Weak Match";
   rationale: string;
 };
 
@@ -48,10 +51,12 @@ function toMatchInput(report: ReportRecord) {
     item: report.item,
     description: report.description || "",
     brand: report.brand || "",
+    itemDetail: report.itemDetail || "",
     color: report.color || "",
     campus: report.campus || "",
     location: report.location || "",
     date: report.incidentDate || "",
+    visualAttributes: report.photoReview?.outcome === "kept" ? null : report.visualAttributes || null,
   };
 }
 
@@ -89,6 +94,16 @@ function localTextMatches(report: ReportRecord, candidates: ReportRecord[]): Mat
   return candidates.flatMap((candidate) => {
     if (candidate.reportType === report.reportType || candidate.status === "Match Found" || candidate.status === "Closed" || candidate.matchedReportId) return [];
 
+    const firstVisual = report.visualAttributes;
+    const otherVisual = candidate.visualAttributes;
+    const firstType = [report.itemDetail, firstVisual?.itemType].filter(Boolean).join(" ").toLowerCase();
+    const otherType = [candidate.itemDetail, otherVisual?.itemType].filter(Boolean).join(" ").toLowerCase();
+    const firstBrand = (firstVisual?.brand || report.brand || "").trim().toLowerCase();
+    const otherBrand = (otherVisual?.brand || candidate.brand || "").trim().toLowerCase();
+    const hasBrandConflict = firstBrand && otherBrand && firstBrand !== otherBrand;
+    const hasTypeConflict = firstType && otherType && textSimilarity(firstType, otherType) === 0 && firstType !== "other" && otherType !== "other";
+    if (hasBrandConflict || hasTypeConflict) return [];
+
     const itemScore = textSimilarity(
       [report.item, report.itemDetail, report.brand, report.color].filter(Boolean).join(" "),
       [candidate.item, candidate.itemDetail, candidate.brand, candidate.color].filter(Boolean).join(" ")
@@ -101,20 +116,41 @@ function localTextMatches(report: ReportRecord, candidates: ReportRecord[]): Mat
       report.location.toLowerCase() === candidate.location.toLowerCase();
     const sameCampus = !!report.campus && !!candidate.campus &&
       report.campus.toLowerCase() === candidate.campus.toLowerCase();
+    const colorsA = [report.color, firstVisual?.primaryColor, ...(firstVisual?.secondaryColors || [])].filter(Boolean).map((value) => String(value).toLowerCase());
+    const colorsB = [candidate.color, otherVisual?.primaryColor, ...(otherVisual?.secondaryColors || [])].filter(Boolean).map((value) => String(value).toLowerCase());
+    const sharedColor = colorsA.find((color) => colorsB.some((other) => color === other || color.includes(other) || other.includes(color)));
+    const modelsMatch = !!firstVisual?.model && !!otherVisual?.model && firstVisual.model.toLowerCase() === otherVisual.model.toLowerCase();
+    const sharedFeatures = [
+      ...(firstVisual?.distinctiveFeatures || []),
+      ...(firstVisual?.physicalCharacteristics || []),
+    ].filter((feature) => [
+      ...(otherVisual?.distinctiveFeatures || []),
+      ...(otherVisual?.physicalCharacteristics || []),
+    ].some((other) => textSimilarity(feature, other) >= 0.35));
+    const sameBrand = !!firstBrand && firstBrand === otherBrand;
 
-    // This fallback compares report text only. It never reads or sends an image.
-    const confidence = Math.min(
+    // Local fallback uses stored visual labels and text, never the raw image.
+    const score = Math.min(
       1,
-      itemScore * 0.52 + descriptionScore * 0.38 + (sameLocation ? 0.12 : 0) + (sameCampus ? 0.08 : 0)
+      itemScore * 0.40 + descriptionScore * 0.28 + (sameLocation ? 0.10 : 0) + (sameCampus ? 0.08 : 0) +
+      (sameBrand ? 0.16 : 0) + (sharedColor ? 0.11 : 0) + (modelsMatch ? 0.20 : 0) + Math.min(0.15, sharedFeatures.length * 0.06)
     );
-    if (confidence < 0.6 || (itemScore < 0.25 && descriptionScore < 0.35)) return [];
+    if (score < 0.48 || (itemScore < 0.2 && descriptionScore < 0.25 && !sameBrand && !sharedColor && !sharedFeatures.length)) return [];
+
+    const support = [
+      sameBrand ? `the same visible or reported brand (${firstVisual?.brand || report.brand})` : "",
+      modelsMatch ? `the same visible model (${firstVisual?.model})` : "",
+      sharedColor ? `similar ${sharedColor} color` : "",
+      sharedFeatures.length ? `similar appearance (${sharedFeatures.slice(0, 2).join(", ")})` : "",
+      itemScore >= 0.25 || descriptionScore >= 0.3 ? "matching item and description details" : "",
+      sameCampus ? `the same reported campus (${report.campus})` : "",
+      sameLocation ? `the same reported location (${report.location})` : "",
+    ].filter(Boolean);
 
     return [{
       reportId: candidate.id,
-      confidence,
-      rationale: sameLocation
-        ? "The item descriptions and reported location are similar."
-        : "The item names and descriptions contain similar details.",
+      matchLevel: score >= 0.76 && (sameBrand || modelsMatch || sharedFeatures.length > 0) ? "Strong Match" : "Possible Match",
+      rationale: `${support.length ? `Supporting details include ${support.join("; ")}.` : "The item names and descriptions contain similar details."}${report.incidentDate && candidate.incidentDate ? " Dates are available for student review." : " Date information is incomplete."}`,
     }];
   });
 }
@@ -129,7 +165,7 @@ function addMatchNotifications(
 
   for (const match of matches) {
     const candidate = candidates.find((item) => item.id === match.reportId);
-    if (!candidate || match.confidence < 0.6) continue;
+    if (!candidate || match.matchLevel === "Weak Match") continue;
 
     const pairKey = [report.id, candidate.id].sort().join(":");
     const currentItem = [report.color, report.brand, report.itemDetail, report.item]
@@ -144,13 +180,12 @@ function addMatchNotifications(
     notifications.unshift({
       id: notificationId,
       type: "possible-match",
-      title: "Possible item match",
-      message: `${currentItem} may match ${otherItem} near ${candidate.location || report.location || "campus"}. ${match.rationale}`,
+      title: match.matchLevel,
+      message: `${currentItem} may match ${otherItem}. ${match.rationale}`,
       reportId: report.id,
       matchedReportId: candidate.id,
       createdAt: now,
       status: "pending",
-      confidence: match.confidence,
       rationale: match.rationale,
     });
   }
@@ -180,9 +215,10 @@ async function matchReport(report: ReportRecord, candidates: ReportRecord[]) {
   const aiMatches = Array.isArray(result?.matches) ? result.matches : [];
   const localMatches = localTextMatches(report, candidates);
   const bestMatches = new Map<string, MatchResult>();
+  const levelRank = { "Strong Match": 3, "Possible Match": 2, "Weak Match": 1 };
   for (const match of [...aiMatches, ...localMatches]) {
     const current = bestMatches.get(match.reportId);
-    if (!current || match.confidence > current.confidence) bestMatches.set(match.reportId, match);
+    if (!current || levelRank[match.matchLevel] > levelRank[current.matchLevel]) bestMatches.set(match.reportId, match);
   }
   addMatchNotifications(report, candidates, [...bestMatches.values()]);
 }

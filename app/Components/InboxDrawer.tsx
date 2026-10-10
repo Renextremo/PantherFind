@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   INBOX_STORAGE_KEY,
   INBOX_UPDATED_EVENT,
@@ -35,8 +35,15 @@ export default function InboxDrawer() {
   const [topPosition, setTopPosition] = useState(175);
   const [notifications, setNotifications] = useState<InboxNotification[]>([]);
   const [reports, setReports] = useState<InboxReport[]>([]);
+  const [toast, setToast] = useState<InboxNotification | null>(null);
+  const [resolutionError, setResolutionError] = useState("");
   const notificationCount = notifications.filter((item) => !item.seen).length;
   const router = useRouter();
+  const pathname = usePathname();
+  const isHomeScreen = pathname === "/";
+  const matchToast = toast?.type === "possible-match" ? toast : null;
+  const previousNotificationIds = useRef<Set<string> | null>(null);
+  const allowToastRef = useRef(false);
 
   const isDragging = useRef(false);
   const didDrag = useRef(false);
@@ -108,10 +115,24 @@ export default function InboxDrawer() {
     }
 
     function loadNotifications() {
+      let nextNotifications: InboxNotification[] = [];
       try {
         const saved = localStorage.getItem(INBOX_STORAGE_KEY);
         const parsed = saved ? JSON.parse(saved) : [];
-        setNotifications(Array.isArray(parsed) ? parsed : []);
+        nextNotifications = Array.isArray(parsed) ? parsed : [];
+        const previousIds = previousNotificationIds.current;
+        const newest = previousIds && nextNotifications.find((item) =>
+          !previousIds.has(item.id) && item.status !== "declined"
+        );
+        if (
+          allowToastRef.current &&
+          newest?.type === "possible-match" &&
+          window.location.pathname !== "/"
+        ) {
+          setToast(newest);
+        }
+        previousNotificationIds.current = new Set(nextNotifications.map((item) => item.id));
+        setNotifications(nextNotifications);
       } catch {
         setNotifications([]);
       }
@@ -126,16 +147,43 @@ export default function InboxDrawer() {
 
     restoreConfirmedMatches();
     loadNotifications();
+    // Treat stored and startup-scanned matches as existing inbox state. Only
+    // messages arriving after the initial scan should raise a toast.
+    void scanStoredReportMatches().finally(() => {
+      loadNotifications();
+      allowToastRef.current = true;
+    });
     window.addEventListener("storage", loadNotifications);
     window.addEventListener(REPORTS_UPDATED_EVENT, loadNotifications);
     window.addEventListener(INBOX_UPDATED_EVENT, loadNotifications);
-    void scanStoredReportMatches().finally(loadNotifications);
     return () => {
       window.removeEventListener("storage", loadNotifications);
       window.removeEventListener(REPORTS_UPDATED_EVENT, loadNotifications);
       window.removeEventListener(INBOX_UPDATED_EVENT, loadNotifications);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isHomeScreen) setInboxOpen(false);
+    if (!isHomeScreen) return;
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("inbox")) {
+      setInboxOpen(true);
+      router.replace("/");
+    }
+  }, [isHomeScreen, pathname, router]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timeout = window.setTimeout(() => setToast(null), 6500);
+    return () => window.clearTimeout(timeout);
+  }, [toast]);
+
+  function openToastInbox() {
+    setToast(null);
+    setInboxOpen(true);
+    if (pathname !== "/") router.push("/?inbox=1");
+    else router.replace("/");
+  }
 
   function openNotification(notification: InboxNotification) {
     markNotificationSeen(notification.id);
@@ -164,9 +212,7 @@ export default function InboxDrawer() {
   }
 
   function updateNotification(notification: InboxNotification, status: "confirmed" | "declined") {
-    const resolved = { ...notification, status, resolvedAt: new Date().toISOString(), seen: true };
-    saveInboxNotifications(notifications.map((item) => item.id === notification.id ? resolved : item));
-
+    const resolvedAt = new Date().toISOString();
     if (status === "confirmed") {
       const pairIds = new Set([notification.reportId, notification.matchedReportId]);
       let currentReports = reports;
@@ -176,27 +222,41 @@ export default function InboxDrawer() {
       } catch {
         // Use the reports already loaded in the inbox if storage is malformed.
       }
-      const foundReport = currentReports.find((report) => pairIds.has(report.id) && report.reportType === "found");
+      const pair = currentReports.filter((report) => pairIds.has(report.id));
+      const foundReport = pair.find((report) => report.reportType === "found");
+      if (pair.length !== 2 || !foundReport) {
+        setResolutionError("We couldn’t verify both reports in this match, so it hasn’t been confirmed.");
+        return;
+      }
       const receipt = {
-        confirmedAt: resolved.resolvedAt || new Date().toISOString(),
-        foundReportId: foundReport?.id || notification.matchedReportId,
+        confirmedAt: resolvedAt,
+        foundReportId: foundReport.id,
         campus: foundReport?.campus,
         location: foundReport?.location,
         caseNumber: foundReport?.caseNumber,
       };
       const updatedReports = currentReports.map((report) => pairIds.has(report.id)
         ? { ...report, status: "Match Found", matchedReportId: report.id === notification.reportId
-          ? notification.matchedReportId : notification.reportId, matchConfirmedAt: resolved.resolvedAt, matchReceipt: receipt }
+          ? notification.matchedReportId : notification.reportId, matchConfirmedAt: resolvedAt, matchReceipt: receipt }
         : report);
       try {
         localStorage.setItem("pantherFindReports", JSON.stringify(updatedReports));
         setReports(updatedReports);
         notifyReportsUpdated();
       } catch {
-        // Inbox resolution remains available even if report metadata cannot be saved.
+        setResolutionError("The match could not be saved. Please check browser storage and retry.");
+        return;
       }
+      const resolved = { ...notification, status, resolvedAt, seen: true };
+      saveInboxNotifications(notifications.map((item) => item.id === notification.id ? resolved : item));
+      setResolutionError("");
       openMatchItem(receipt.foundReportId);
+      return;
     }
+
+    const resolved = { ...notification, status, resolvedAt, seen: true };
+    saveInboxNotifications(notifications.map((item) => item.id === notification.id ? resolved : item));
+    setResolutionError("");
   }
 
   function handlePointerDown(event: React.PointerEvent<HTMLButtonElement>) {
@@ -235,7 +295,18 @@ export default function InboxDrawer() {
   }
 
   return (
-    <div
+    <>
+    {!isHomeScreen && matchToast && (
+      <button type="button" className="inboxMatchToast" onClick={openToastInbox}>
+        <span className="inboxMessageIconCircle"><img src="/images/reports-blue.png" alt="" className="inboxMessageIcon" /></span>
+        <span className="inboxMessageText">
+          <span className="notificationNewLabel">New</span>
+          <strong>New message in your inbox</strong>
+          <span>{matchToast.title}</span>
+        </span>
+      </button>
+    )}
+    {isHomeScreen && <div
       className={inboxOpen ? "inboxDrawer inboxDrawerOpen" : "inboxDrawer"}
       style={{ top: `${topPosition}px` }}
     >
@@ -262,6 +333,7 @@ export default function InboxDrawer() {
       </button>
 
       <div className={notifications.length === 0 ? "inboxPanel inboxPanelEmpty" : "inboxPanel"}>
+        {resolutionError && <p className="inboxResolutionError" role="alert">{resolutionError}</p>}
         {notifications.length === 0 ? (
           <div className="inboxEmptyState">No notifications yet</div>
         ) : (
@@ -309,6 +381,7 @@ export default function InboxDrawer() {
           ))
         )}
       </div>
-    </div>
+    </div>}
+    </>
   );
 }
